@@ -19,6 +19,8 @@ export default async function handler(req, res) {
       spreadsheetId: "Database",
       range: "List1",
     });
+    console.log(sheet.data);  // Печатаем данные из таблицы
+
 
     const [headers, ...rows] = sheet.data.values;
 
@@ -46,6 +48,9 @@ export default async function handler(req, res) {
     res.status(404).json({ status: "error", message: "Ученик не найден" });
 
   } catch (e) {
+    console.error('Error:', e); // Выводим ошибку в консоль
     res.status(500).json({ status: "error", message: e.message });
+}
+
   }
 }
