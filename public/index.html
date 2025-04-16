@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Вход</title>
+    <style>
+        button, input, select, textarea {
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        *:focus {
+            outline: none;
+        }
+
+        * {
+            user-select: none;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            background-color: #f4f7fb;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-container h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .input-group input {
+            width: 90%;
+            padding: 15px;
+            font-size: 16px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            outline: none;
+            background-color: #f5f7fa;
+            transition: border-color 0.3s;
+            padding: 23px 16px 5px;
+            position: relative;
+        }
+
+        .input-group input:focus {
+            border: 1px solid #007bff;
+        }
+
+        .input-group input.error {
+            border: 1px solid rgba(238, 63, 88, 0.5);
+            background: rgba(238, 63, 88, .16);
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #999;
+            pointer-events: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label,
+        .input-group input:not(:empty) + label {
+            top: 12px;
+            font-size: 12px;
+            color: #007bff;
+        }
+
+        .input-group input.error + label {
+            color: rgba(238, 63, 88, 0.8);
+            font-size: 12px;
+            top: 12px;
+        }
+
+        .error-message {
+            color: rgba(238, 63, 88, 1);
+            font-size: 12px;
+            text-align: left;
+            margin-top: 5px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .login-button:hover {
+            background-color: #0056b3;
+        }
+
+        #toggle-password {
+            position: absolute;
+            right: 10px; /* Отступ от правого края */
+            top: 50%;
+            transform: translateY(-50%); /* Центрируем по вертикали */
+            width: 20px; /* Размер иконки */
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Делаем видимой, если в поле пароля есть текст */
+        .input-group input:not(:placeholder-shown) ~ .password-toggle {
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>ГИС НСО «Моя Библиотека»</h2>
+        <div class="input-group">
+            <input type="text" id="login" placeholder=" " required>
+            <label for="login">Номер телефона</label>
+            <div id="login-error" class="error-message"></div>
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder=" " required maxlength="40">
+            <label for="password">Пароль</label>
+            <img id="toggle-password" src="password-hidden.a803b70530adcfb7.svg" style="display: none; cursor: pointer;" />
+            <div id="password-error" class="error-message"></div>
+        </div>
+        <div id="login-password-error" class="error-message"></div>
+        <button class="login-button" onclick="validateLogin()">Войти</button>
+    </div>
+
+    <script>
+        const loginField = document.getElementById('login');
+        const passwordField = document.getElementById('password');
+        const togglePassword = document.getElementById('toggle-password');
+        const loginError = document.getElementById('login-error');
+        const passwordError = document.getElementById('password-error');
+
+        // Функция для загрузки данных пользователей
+        async function fetchUsersData() {
+            try {
+                const response = await fetch('users.json'); // Укажи правильный путь к файлу users.json
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить данные');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки данных:', error);
+                return {}; // Возвращаем пустой объект, если данные не загрузились
+            }
+        }
+
+        // Форматирование телефона для отображения
+        function formatPhoneNumber(value) {
+            let numbers = value.replace(/\D/g, ""); // Убираем все не-цифры
+            if (numbers.startsWith("7")) numbers = numbers.substring(1); // Убираем дублирующуюся 7
+
+            if (numbers.length > 10) numbers = numbers.substring(0, 10); // Ограничиваем длину
+
+            let formatted = "+7 ";
+            if (numbers.length > 0) formatted += `(${numbers.substring(0, 3)}`;
+            if (numbers.length >= 4) formatted += `) ${numbers.substring(3, 6)}`;
+            if (numbers.length >= 7) formatted += `-${numbers.substring(6, 8)}`;
+            if (numbers.length >= 9) formatted += `-${numbers.substring(8, 10)}`;
+
+            return formatted;
+        }
+
+        // Обработчик для ввода в поле логина
+        loginField.addEventListener("input", function () {
+            let oldValue = loginField.value;
+            let newValue = formatPhoneNumber(oldValue);
+            loginField.value = newValue;
+
+            // Убираем ошибку при вводе хотя бы одной цифры
+            if (loginField.value.length > 4) {
+                loginField.classList.remove('error');
+                loginError.textContent = '';
+            }
+        });
+
+        // Очищаем поле при потере фокуса, если оно пустое
+        loginField.addEventListener("blur", function () {
+            if (loginField.value === "+7 ") {
+                loginField.value = "";
+            }
+        });
+
+        // Валидация логина и пароля
+        async function validateLogin() {
+            console.log('Функция validateLogin вызвана'); // Проверка вызова функции
+
+            const loginValue = loginField.value.trim().replace(/\D/g, ''); // Убираем все не-цифры
+            const passwordValue = passwordField.value.trim();
+
+            let isValid = true;
+            loginError.textContent = '';
+            passwordError.textContent = '';
+
+            // Считываем пользователей из базы
+            const usersData = await fetchUsersData();
+            let userFound = false;
+            let userPassword = '';
+
+            // Проверяем номер телефона
+            for (let school in usersData) {
+                for (let grade in usersData[school].classes) {
+                    const classData = usersData[school].classes[grade];
+                    for (let student of classData) {
+                        if (student['Номер телефона'].replace(/\D/g, '') === loginValue) {
+                            userPassword = student['Пароль'];
+                            userFound = true;
+                            break;
+                        }
+                    }
+                }
+                if (userFound) break;
+            }
+
+            // Если номер не найден
+            if (!userFound) {
+                loginError.textContent = 'Введите корректный номер';
+                loginField.classList.add('error');
+                isValid = false;
+            }
+
+            // Проверка пароля
+            if (userPassword !== passwordValue) {
+                passwordError.textContent = 'Неверный пароль';
+                passwordField.classList.add('error');
+                isValid = false;
+            }
+
+            // Если все верно, то успешный вход
+            if (isValid) {
+                console.log('Логин для сохранения в localStorage:', loginValue); // Логирование перед записью
+                localStorage.setItem('login', loginValue); // Сохраняем логин в localStorage
+                console.log('Сохранённый логин:', localStorage.getItem('login')); // Проверяем сохранение
+
+                alert('Вход успешен!');
+                window.location.href = 'user-profile.html'; // Переход на страницу с информацией
+            }
+        }
+
+        // Привязка функции к кнопке входа
+        document.getElementById('login-button').addEventListener('click', validateLogin);
+
+
+        // Валидация пароля
+        passwordField.addEventListener("input", function () {
+            if (passwordField.value.trim().length > 0) {
+                passwordField.classList.remove('error');
+                passwordError.textContent = '';
+            } else {
+                passwordField.classList.add('error');
+                passwordError.textContent = 'Введите пароль';
+            }
+        });
+
+        // Переключение видимости пароля
+        togglePassword.addEventListener('click', function () {
+            const type = passwordField.type === 'password' ? 'text' : 'password';
+            passwordField.type = type;
+
+            // Меняем иконку в зависимости от состояния пароля
+            togglePassword.src = type === 'password' ? 
+                'password-hidden.a803b70530adcfb7.svg' :
+                'password-shown.6602aebea52daaac.svg';
+        });
+
+        // Показываем кнопку, когда в поле есть символы
+        passwordField.addEventListener('input', function () {
+            togglePassword.style.display = passwordField.value.length > 0 ? 'block' : 'none';
+        });
+            
+    </script>
+    
+    
+</body>
+</html>
