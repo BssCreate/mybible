@@ -152,7 +152,7 @@
             <div id="password-error" class="error-message"></div>
         </div>
         <div id="login-password-error" class="error-message"></div>
-        <button class="login-button">Войти</button>
+        <button id="login-button" class="login-button">Войти</button>
     </div>
 
     
@@ -165,8 +165,8 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!loginButton) return;
 
   loginButton.addEventListener("click", async () => {
-    const phone = document.getElementById("login-phone").value;
-    const password = document.getElementById("login-password").value;
+    const phone = document.getElementById("login").value;
+    const password = document.getElementById("password").value;
 
     try {
       const response = await fetch("https://nso-my-library.vercel.app/api/student-login", {
