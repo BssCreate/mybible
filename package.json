@@ -1,0 +1,17 @@
+{
+  "name": "google-sheets-site-backend",
+  "version": "1.0.0",
+  "description": "Backend for static site using Google Sheets as database",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "you",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "googleapis": "^127.0.0"
+  }
+}
