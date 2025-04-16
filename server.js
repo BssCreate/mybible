@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cors({ origin: '*' }));
 app.use(express.static(path.join(__dirname, 'public')));
 // Пример ID таблицы Google Sheets и диапазона
-const spreadsheetId = 'YOUR_SPREADSHEET_ID';
+const spreadsheetId = 'Database';
 const requestsRange = 'Requests!A2:F'; // Диапазон, в котором хранятся заявки
 
 // Проверка на одинаковые заявки с одним `name`
