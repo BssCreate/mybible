@@ -324,7 +324,12 @@
 
             await loadUserData(); // загрузим данные один раз
             await loadNews(); // загружаем новости один раз
+
+            // Скрываем экран загрузки
+            document.getElementById("loadingScreen").style.display = "none";
+            
             changeContent("books"); // стартовая вкладка
+            
         });
     
         async function loadUserData() {
