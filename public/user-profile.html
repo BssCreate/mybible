@@ -256,147 +256,125 @@
 
     <script>
     const GOOGLE_SHEET_API = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhPRAF8zi6FD7yI54DCNvM52dp-gKI3gGxGZB1Ouztt6NwKA-WNpgkVJul7Zr9KCcYppPFBxTNdbSOXgNEYdVOlU5yNFyimK6sjyO0jvILct5juObuBOtZZ44Ln8I5yxzPbsWaFJmQr4i8X092RugeQueIS91q_AC5tuW-QdVYD9P1h9Kkm9Gsm1PtaaTMUthYYkvuLVRy5MNa6QRoxLSqFHpi6l9aCfZO1zQBabmeQ99PsKXQmHO-hC_7-jEE_7lhaEULubCMmhVb9E1kWmrxK0YSk0g&lib=MJehZtwQYGbxr_NY_BXuOB0TUDqEcDcnD"; // вставь сюда свою ссылку
-
-    async function changeContent(section) {
-        const content = document.getElementById('content');
-        document.querySelectorAll('.navbar button').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.getElementById(`${section}Button`);
-        if (activeBtn) activeBtn.classList.add('active');
+    let globalUserData = null; // здесь будет храниться объект ученика
     
-        if (section === 'news') {
-            content.innerHTML = `<h1>Новости</h1><p>Здесь будут отображаться последние новости.</p>`;
-        } else if (section === 'books') {
-            content.innerHTML = `<h1>Книги</h1>
-                <div class="book-list" id="book-container">
-                    <div class="book-header">
-                        <div class="book-date">Дата выдачи</div>
-                        <div class="book-title">Автор и заглавие книги</div>
-                    </div>
-                </div>`;
-            await loadBooks(); // вызываем только после того, как контейнер добавлен
-        } else if (section === 'profile') {
-            content.innerHTML = `<h1>Профиль</h1>
-                <div id="profile-inf"><div id="student-info"></div></div>
-                <div id="notifications" class="notifications-box">
-                    <h3>Последние уведомления</h3>
-                    <div id="notifications-list"></div>
-                </div>`;
-            await loadStudentInfo(); // вызываем только после вставки HTML
-            loadNotifications();
-        }
-    }
-        
-    changeContent('books'); // запуск по умолчанию
-
-    async function fetchUserData() {
-        const response = await fetch(GOOGLE_SHEET_API);
-        const data = await response.json();
-        return data.list1 || [];
-    }
-
-    function normalizePhone(phone) {
-        return (phone || "").replace(/[^\d]/g, "");
-    }
-
-    async function loadStudentInfo() {
-        const orgs = await fetchUserData();
-        const login = localStorage.getItem('login');
-        if (!login) {
-            document.getElementById('student-info').innerText = "Телефон не найден.";
-            return;
-        }
-        const normalizedLogin = normalizePhone(login);
-        let found = false;
-        let html = "";
-
-        for (const org of orgs) {
-            const studentsJson = JSON.parse(org.students_json || "{}");
-            for (const className in studentsJson) {
-                for (const student of studentsJson[className]) {
-                    const studentPhone = normalizePhone(student["Номер телефона"]);
-                    if (studentPhone === normalizedLogin) {
-                        const label = student["Образование"] ? "Класс" : "Роль";
-                        const value = student["Образование"] || student["Роль"] || "Не указано";
-                        html = `
-                            <p>${student["Фамилия"]} ${student["Имя"]} ${student["Отчество"]}</p>
-                            <p>${label}: ${value}</p>
-                        `;
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) break;
-            }
-            if (found) break;
-        }
-
-        document.getElementById("student-info").innerHTML = found ? html : "Пользователь не найден.";
-    }
-
-    async function loadBooks() {
-        const response = await fetch(GOOGLE_SHEET_API);
-        const data = await response.json();
-        const orgs = data.list1 || [];
-    
-        const login = localStorage.getItem('login');
-        if (!login) {
-            document.getElementById('book-container').innerHTML += '<p>Номер телефона не найден.</p>';
-            return;
-        }
-    
-        const cleanedLogin = login.replace(/\D/g, '');
-        const container = document.getElementById('book-container');
-        let found = false;
-    
-        for (const org of orgs) {
-            const studentsJson = JSON.parse(org.students_json || "{}");
-            for (const className in studentsJson) {
-                const students = studentsJson[className];
-                for (const student of students) {
-                    const phone = (student["Номер телефона"] || "").replace(/\D/g, '');
-                    if (phone === cleanedLogin) {
-                        if (Array.isArray(student.books) && student.books.length > 0) {
-                            student.books.forEach(book => {
-                                const bookItem = document.createElement('div');
-                                bookItem.className = "book-item";
-                                bookItem.innerHTML = `
-                                    <div class="book-date">${book["Дата выдачи"] || "-"}</div>
-                                    <div class="book-title">${book["Автор и заглавие книги"] || "Без названия"}</div>
-                                `;
-                                container.appendChild(bookItem);
-                            });
-                        } else {
-                            container.innerHTML += `<p>Книги не найдены.</p>`;
-                        }
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) break;
-            }
-            if (found) break;
-        }
-    
-        if (!found) {
-            container.innerHTML += `<p>Ученик не найден.</p>`;
-        }
-    }
-
-
-    function loadNotifications() {
-        const notifications = [
-            "Уведомление 1: Пожалуйста, верните книгу до конца месяца.",
-            "Уведомление 2: Новый учебный материал доступен.",
-            "Уведомление 3: Ваши оценки обновлены."
-        ];
-        const list = document.getElementById("notifications-list");
-        list.innerHTML = "";
-        notifications.forEach(note => {
-            const p = document.createElement("p");
-            p.textContent = note;
-            list.appendChild(p);
+        window.addEventListener("DOMContentLoaded", async () => {
+            await loadUserData(); // загрузим данные один раз
+            changeContent("books"); // стартовая вкладка
         });
-    }
+    
+        async function loadUserData() {
+            const login = localStorage.getItem("login");
+            if (!login) return;
+    
+            const normalizedLogin = login.replace(/\D/g, '');
+            const response = await fetch(GOOGLE_SHEET_API);
+            const data = await response.json();
+            const orgs = data.list1 || [];
+    
+            for (const org of orgs) {
+                const studentsJson = JSON.parse(org.students_json || "{}");
+                for (const className in studentsJson) {
+                    const students = studentsJson[className];
+                    for (const student of students) {
+                        const studentPhone = (student["Номер телефона"] || "").replace(/\D/g, "");
+                        if (studentPhone === normalizedLogin) {
+                            globalUserData = {
+                                student,
+                                org
+                            };
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    
+        async function changeContent(section) {
+            const content = document.getElementById("content");
+            document.querySelectorAll('.navbar button').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`${section}Button`);
+            if (activeBtn) activeBtn.classList.add('active');
+    
+            if (section === 'news') {
+                content.innerHTML = `<h1>Новости</h1>
+                    <p>Уведомление 1: Пожалуйста, верните книгу до конца месяца.</p>
+                    <p>Уведомление 2: Новый учебный материал доступен.</p>
+                    <p>Уведомление 3: Ваши оценки обновлены.</p>`;
+            }
+    
+            else if (section === 'books') {
+                content.innerHTML = `<h1>Книги</h1>
+                    <div class="book-list" id="book-container">
+                        <div class="book-header">
+                            <div class="book-date">Дата выдачи</div>
+                            <div class="book-title">Автор и заглавие книги</div>
+                        </div>
+                    </div>`;
+                renderBooks();
+            }
+    
+            else if (section === 'profile') {
+                content.innerHTML = `<h1>Профиль</h1>
+                    <div id="profile-inf">
+                        <div id="student-info"></div>
+                    </div>
+                    <div id="notifications" class="notifications-box">
+                        <h3>Последние уведомления</h3>
+                        <div id="notifications-list">
+                            <p>Уведомление 1: Пожалуйста, верните книгу до конца месяца.</p>
+                            <p>Уведомление 2: Новый учебный материал доступен.</p>
+                            <p>Уведомление 3: Ваши оценки обновлены.</p>
+                        </div>
+                    </div>`;
+                renderStudentInfo();
+            }
+        }
+    
+        function renderStudentInfo() {
+            const container = document.getElementById("student-info");
+            if (!globalUserData) {
+                container.innerHTML = "Пользователь не найден.";
+                return;
+            }
+    
+            const student = globalUserData.student;
+            const org = globalUserData.org;
+    
+            const fullName = `${student["Фамилия"]} ${student["Имя"]} ${student["Отчество"]}`;
+            const education = student["Образование"] || student["Роль"] || "Не указано";
+            const schoolName = student["Учебное заведение(Если учится)"] || org.school || "Не указано";
+    
+            container.innerHTML = `
+                <p>${fullName}</p>
+                <p>${student["Образование"] ? "Класс" : "Роль"}: ${education}</p>
+                <p>Учреждение: ${schoolName}</p>
+            `;
+        }
+    
+        function renderBooks() {
+            const container = document.getElementById("book-container");
+            if (!globalUserData) {
+                container.innerHTML += "<p>Ученик не найден.</p>";
+                return;
+            }
+    
+            const books = globalUserData.student.books || [];
+            if (books.length === 0) {
+                container.innerHTML += "<p>Книги отсутствуют.</p>";
+                return;
+            }
+    
+            books.forEach(book => {
+                const item = document.createElement("div");
+                item.className = "book-item";
+                item.innerHTML = `
+                    <div class="book-date">${book["Дата выдачи"] || "-"}</div>
+                    <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
+                `;
+                container.appendChild(item);
+            });
+        }
 </script>
 
     
