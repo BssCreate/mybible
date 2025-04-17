@@ -25,26 +25,28 @@
   </div>
 
   <script>
-    function validateLogin() {
-      const login = document.getElementById("login").value.trim();
-      const password = document.getElementById("password").value.trim();
-      fetch("/login", {
+    async function validateLogin() {
+    const login = document.getElementById("login").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const response = await fetch("/api/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ login, password }),
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            alert("Успешный вход");
-          } else {
-            document.getElementById("login-password-error").textContent = data.message;
-          }
-        })
-        .catch(() => {
-          document.getElementById("login-password-error").textContent = "Ошибка подключения к серверу";
-        });
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ login, password })
+    });
+
+    const result = await response.json();
+    
+    if (result.success) {
+        alert("Вход успешен!");
+        // или window.location.href = "/admin.html";
+    } else {
+        document.getElementById("login-password-error").innerText = result.message;
     }
+}
+
   </script>
 </body>
 </html>
