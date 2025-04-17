@@ -57,9 +57,8 @@
       <input type="password" id="password" placeholder=" " required maxlength="40" />
       <label for="password">Пароль</label>
       <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
-      <div id="password-error" class="error-message"></div>
+      <div id="login-password-error" class="error-message"></div>
     </div>
-    <div id="login-password-error" class="error-message"></div>
     <button class="login-button" onclick="validateLogin()">Войти</button>
   </div>
 
@@ -145,10 +144,10 @@
           document.getElementById("overlay").style.display = 'none';  // Скрыть анимацию после успешного входа
         } else {
           if (!loginValid) {
-            document.getElementById("login-error").innerText = "Неверный номер телефона";
+            document.getElementById("login-password-error").innerText = "Неверный логин или пароль";
           }
           if (!passwordValid) {
-            document.getElementById("password-error").innerText = "Неверный пароль";
+            document.getElementById("login-password-error").innerText = "Неверный логин или пароль";
           }
           document.getElementById("login-password-error").innerText = "Неверный логин или пароль";
         }
