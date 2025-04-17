@@ -5,9 +5,18 @@ module.exports = async (req, res) => {
         return res.status(405).json({ message: "Method not allowed" });
     }
 
-    const { login, password } = req.body;
-
     try {
+        let body = '';
+
+        await new Promise((resolve) => {
+            req.on('data', chunk => {
+                body += chunk;
+            });
+            req.on('end', resolve);
+        });
+
+        const { login, password } = JSON.parse(body);
+
         const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
 
         const auth = new google.auth.GoogleAuth({
