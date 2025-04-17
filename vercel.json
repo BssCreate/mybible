@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/login.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-}
