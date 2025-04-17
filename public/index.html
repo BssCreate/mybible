@@ -69,8 +69,44 @@
   </div>
 
   <script>
+    // Форматирование телефона для отображения
+    function formatPhoneNumber(value) {
+      let numbers = value.replace(/\D/g, ""); // Убираем все не-цифры
+      if (numbers.startsWith("7")) numbers = numbers.substring(1); // Убираем дублирующуюся 7
+
+      if (numbers.length > 10) numbers = numbers.substring(0, 10); // Ограничиваем длину
+
+      let formatted = "+7 ";
+      if (numbers.length > 0) formatted += `${numbers.substring(0, 3)}`;
+      if (numbers.length >= 4) formatted += ` ${numbers.substring(3, 6)}`;
+      if (numbers.length >= 7) formatted += `-${numbers.substring(6, 8)}`;
+      if (numbers.length >= 9) formatted += `-${numbers.substring(8, 10)}`;
+
+      return formatted;
+    }
+
+    // Обработчик для ввода в поле логина
+    document.getElementById("login").addEventListener("input", function () {
+      let oldValue = this.value;
+      let newValue = formatPhoneNumber(oldValue);
+      this.value = newValue;
+
+      // Убираем ошибку при вводе хотя бы одной цифры
+      if (this.value.length > 4) {
+        this.classList.remove('error');
+        document.getElementById("login-error").textContent = '';
+      }
+    });
+
+    // Очищаем поле при потере фокуса, если оно пустое
+    document.getElementById("login").addEventListener("blur", function () {
+      if (this.value === "+7 ") {
+        this.value = "";
+      }
+    });
+
     async function validateLogin() {
-      const login = document.getElementById("login").value.trim();
+      const login = document.getElementById("login").value.trim().replace(/\D/g, '');  // Убираем все нецифры
       const password = document.getElementById("password").value.trim();
 
       // Очищаем ошибки перед новой проверкой
