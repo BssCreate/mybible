@@ -7,7 +7,33 @@
     <title>Document</title>
     <style>
 
-        
+        /* Стиль для экрана загрузки */
+        #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
         /* Основные стили для страницы */
         body {
@@ -259,6 +285,11 @@
 </head>
 <body>
 
+    <div id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+
+    
     <div class="content" id="content">
         <h1>Добро пожаловать!</h1>
         <p>Выберите одну из опций на панели навигации, чтобы изменить содержимое.</p>
@@ -288,6 +319,9 @@
     let newsData = []; // здесь будут храниться новости
 
         window.addEventListener("DOMContentLoaded", async () => {
+            // Показываем экран загрузки до загрузки данных
+            document.getElementById("loadingScreen").style.display = "flex";
+
             await loadUserData(); // загрузим данные один раз
             await loadNews(); // загружаем новости один раз
             changeContent("books"); // стартовая вкладка
