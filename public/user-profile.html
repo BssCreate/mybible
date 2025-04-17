@@ -285,9 +285,11 @@
     <script>
     const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbxWq5SIZ3ps5bib-ZRKztnD-Lfe7-EO8BLaBavusX-Iry74ZDQM_NN-cMEtYhcCN0kr/exec"; // вставь сюда свою ссылку
     let globalUserData = null; // здесь будет храниться объект ученика
-    
+    let newsData = []; // здесь будут храниться новости
+
         window.addEventListener("DOMContentLoaded", async () => {
             await loadUserData(); // загрузим данные один раз
+            await loadNews(); // загружаем новости один раз
             changeContent("books"); // стартовая вкладка
         });
     
@@ -317,6 +319,13 @@
                 }
             }
         }
+
+        // Функция для загрузки новостей
+        async function loadNews() {
+            const response = await fetch(GOOGLE_SHEET_API);
+            const data = await response.json();
+            newsData = data.news || [];
+        }
     
         async function changeContent(section) {
             const content = document.getElementById("content");
@@ -328,35 +337,25 @@
                 content.innerHTML = `<h1>Новости</h1>
                     <div id="news-container"></div>`; // Контейнер для новостей
     
-                // Загружаем новости через API
-                fetch('https://script.google.com/macros/s/AKfycbxWq5SIZ3ps5bib-ZRKztnD-Lfe7-EO8BLaBavusX-Iry74ZDQM_NN-cMEtYhcCN0kr/exec')
-                    .then(response => response.json())
-                    .then(data => {
-                        const newsContainer = document.getElementById('news-container');
-                        const news = data.news;
+                const newsContainer = document.getElementById('news-container');
+
+                // Отображаем новости
+                newsData.forEach(newsItem => {
+                    if (globalUserData && globalUserData.org.school === newsItem.school) {
+                        const newsCard = document.createElement('div');
+                        newsCard.classList.add('news-card');
     
-                        // Отображаем новости, фильтруя по школе
-                        news.forEach(newsItem => {
-                            if (globalUserData && globalUserData.org.school === newsItem.school) {
-                                const newsCard = document.createElement('div');
-                                newsCard.classList.add('news-card');
+                        const formattedDate = formatDate(newsItem.date);
     
-                                // Форматируем дату
-                                const formattedDate = formatDate(newsItem.date);
+                        newsCard.innerHTML = `
+                            <h2>${newsItem.title}</h2>
+                            <p>${newsItem.desc}</p>
+                            <p><strong>Дата:</strong> ${formattedDate}</p>
+                        `;
     
-                                newsCard.innerHTML = `
-                                    <h2>${newsItem.title}</h2>
-                                    <p>${newsItem.desc}</p>
-                                    <p><strong>Дата:</strong> ${formattedDate}</p>
-                                `;
-    
-                                newsContainer.appendChild(newsCard);
-                            }
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Ошибка загрузки новостей:', error);
-                    });
+                        newsContainer.appendChild(newsCard);
+                    }
+                });
             }
     
             else if (section === 'books') {
@@ -375,14 +374,12 @@
                     <div id="profile-inf">
                         <div id="student-info"></div>
                     </div>
-                    // <div id="notifications" class="notifications-box">
-                    //     <h3>Последние уведомления</h3>
-                    //     <div id="notifications-list">
-                    //         <p>Уведомление 1: Пожалуйста, верните книгу до конца месяца.</p>
-                    //         <p>Уведомление 2: Новый учебный материал доступен.</p>
-                    //         <p>Уведомление 3: Ваши оценки обновлены.</p>
-                    //     </div>
-                    // </div>
+                    <div id="notifications" class="notifications-box">
+                        <h3>Уведомления</h3>
+                        <div id="notifications-list">
+                            <p>В разработке.</p>
+                        </div>
+                    </div>
                     `;
                 renderStudentInfo();
             }
