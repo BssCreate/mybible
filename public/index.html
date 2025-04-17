@@ -127,7 +127,8 @@
         const normalizedAdminLogin = admin.login.replace(/[^\d]/g, ''); // Нормализуем логин администратора
         if (normalizedAdminLogin === login && admin.password.toString() === password) {
           success = true;
-          alert("Вы успешно вошли как Администратор");
+          localStorage.setItem("login", login); // сохраняем номер телефона в localStorage
+          window.location.href = "user-profile.html"; // переход на страницу профиля
           break;
         }
       }
@@ -144,7 +145,8 @@
               const studentPass = student["Пароль"]?.toString() || '';
               if (studentPhone === login && studentPass === password) {
                 success = true;
-                alert("Вы успешно вошли как Обучающийся");
+                localStorage.setItem("login", login); // сохраняем номер телефона в localStorage
+                window.location.href = "user-profile.html"; // переход на страницу профиля
                 break;
               }
             }
