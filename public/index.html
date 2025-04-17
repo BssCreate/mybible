@@ -214,45 +214,29 @@
 
         // Валидация логина и пароля
         async function validateLogin() {
-            const loginValue = loginField.value.trim().replace(/\D/g, '');
-            const passwordValue = passwordField.value.trim();
+          const loginValue = loginField.value.trim().replace(/\D/g, '');
+          const passwordValue = passwordField.value.trim();
         
-            loginError.textContent = '';
-            passwordError.textContent = '';
+          const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: loginValue, password: passwordValue }),
+          });
         
-            if (loginValue.length < 10) {
-                loginError.textContent = 'Введите корректный номер';
-                loginField.classList.add('error');
-                return;
-            }
+          const data = await response.json();
         
-            if (passwordValue.length === 0) {
-                passwordError.textContent = 'Введите пароль';
-                passwordField.classList.add('error');
-                return;
-            }
-        
-            try {
-                const res = await fetch('/api/login/student', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone: loginValue, password: passwordValue })
-                });
-        
-                if (res.ok) {
-                    localStorage.setItem('login', loginValue);
-                    alert('Вход успешен!');
-                    window.location.href = 'user-profile.html';
-                } else {
-                    const errorText = await res.text();
-                    document.getElementById('login-password-error').textContent = errorText;
-                }
-            } catch (err) {
-                console.error('Ошибка входа:', err);
-                document.getElementById('login-password-error').textContent = 'Ошибка подключения';
-            }
+          if (data.success) {
+            localStorage.setItem('login', loginValue);
+            alert('Вход успешен!');
+            window.location.href = 'user-profile.html';
+          } else {
+            loginError.textContent = 'Неверный логин или пароль';
+            loginField.classList.add('error');
+            passwordField.classList.add('error');
+          }
         }
         
+                
 
         // Привязка функции к кнопке входа
         document.getElementById('login-button').addEventListener('click', validateLogin);
