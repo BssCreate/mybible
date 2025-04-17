@@ -8,9 +8,6 @@ export default async function handler(req, res) {
   const { login, password } = req.body;
   console.log("Получены данные:", login, password);
 
-  
-  console.log("Переменная GOOGLE_SERVICE_ACCOUNT:", process.env.GOOGLE_SERVICE_ACCOUNT?.slice(0, 100));
-
   try {
     // Разбор строки из переменной окружения
     const raw = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
