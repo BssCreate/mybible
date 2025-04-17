@@ -262,7 +262,7 @@
         document.querySelectorAll('.navbar button').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.getElementById(`${section}Button`);
         if (activeBtn) activeBtn.classList.add('active');
-
+    
         if (section === 'news') {
             content.innerHTML = `<h1>Новости</h1><p>Здесь будут отображаться последние новости.</p>`;
         } else if (section === 'books') {
@@ -273,7 +273,7 @@
                         <div class="book-title">Автор и заглавие книги</div>
                     </div>
                 </div>`;
-            loadBooks();
+            await loadBooks(); // вызываем только после того, как контейнер добавлен
         } else if (section === 'profile') {
             content.innerHTML = `<h1>Профиль</h1>
                 <div id="profile-inf"><div id="student-info"></div></div>
@@ -281,11 +281,11 @@
                     <h3>Последние уведомления</h3>
                     <div id="notifications-list"></div>
                 </div>`;
-            loadStudentInfo();
+            await loadStudentInfo(); // вызываем только после вставки HTML
             loadNotifications();
         }
     }
-
+        
     changeContent('books'); // запуск по умолчанию
 
     async function fetchUserData() {
