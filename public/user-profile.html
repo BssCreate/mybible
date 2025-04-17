@@ -218,6 +218,34 @@
             background-color: rgba(0, 0, 0, 0.5);
             }
 
+        #news-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.news-card {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.news-card:hover {
+  transform: translateY(-10px);
+}
+
+.news-card h2 {
+  margin: 0 0 10px;
+}
+
+.news-card p {
+  margin: 5px 0;
+}
+
+
         * {
             outline: none;
             -webkit-tap-highlight-color: transparent;
@@ -255,7 +283,7 @@
     </div>
 
     <script>
-    const GOOGLE_SHEET_API = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhPRAF8zi6FD7yI54DCNvM52dp-gKI3gGxGZB1Ouztt6NwKA-WNpgkVJul7Zr9KCcYppPFBxTNdbSOXgNEYdVOlU5yNFyimK6sjyO0jvILct5juObuBOtZZ44Ln8I5yxzPbsWaFJmQr4i8X092RugeQueIS91q_AC5tuW-QdVYD9P1h9Kkm9Gsm1PtaaTMUthYYkvuLVRy5MNa6QRoxLSqFHpi6l9aCfZO1zQBabmeQ99PsKXQmHO-hC_7-jEE_7lhaEULubCMmhVb9E1kWmrxK0YSk0g&lib=MJehZtwQYGbxr_NY_BXuOB0TUDqEcDcnD"; // вставь сюда свою ссылку
+    const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbxWq5SIZ3ps5bib-ZRKztnD-Lfe7-EO8BLaBavusX-Iry74ZDQM_NN-cMEtYhcCN0kr/exec"; // вставь сюда свою ссылку
     let globalUserData = null; // здесь будет храниться объект ученика
     
         window.addEventListener("DOMContentLoaded", async () => {
@@ -297,11 +325,35 @@
             if (activeBtn) activeBtn.classList.add('active');
     
             if (section === 'news') {
-                content.innerHTML = `<h1>Новости</h1>
-                    <p>Уведомление 1: Пожалуйста, верните книгу до конца месяца.</p>
-                    <p>Уведомление 2: Новый учебный материал доступен.</p>
-                    <p>Уведомление 3: Ваши оценки обновлены.</p>`;
-            }
+                  content.innerHTML = `<h1>Новости</h1>
+                    <div id="news-container"></div>`; // Контейнер для новостей
+                
+                  // Загружаем новости через API
+                  fetch('https://script.google.com/macros/s/AKfycbxWq5SIZ3ps5bib-ZRKztnD-Lfe7-EO8BLaBavusX-Iry74ZDQM_NN-cMEtYhcCN0kr/exec')
+                    .then(response => response.json())
+                    .then(data => {
+                      const newsContainer = document.getElementById('news-container');
+                      const news = data.news;
+                
+                      // Отображаем новости в виде карточек
+                      news.forEach(newsItem => {
+                        const newsCard = document.createElement('div');
+                        newsCard.classList.add('news-card');
+                
+                        newsCard.innerHTML = `
+                          <h2>${newsItem.title}</h2>
+                          <p>${newsItem.desc}</p>
+                          <p><strong>Дата:</strong> ${newsItem.date}</p>
+                        `;
+                
+                        newsContainer.appendChild(newsCard);
+                      });
+                    })
+                    .catch(error => {
+                      console.error('Ошибка загрузки новостей:', error);
+                    });
+                }
+
     
             else if (section === 'books') {
                 content.innerHTML = `<h1>Книги</h1>
