@@ -158,6 +158,20 @@
         document.getElementById("overlay").style.display = 'none';  // Скрыть анимацию, даже если произошла ошибка
       }
     }
+
+    // Переключение видимости пароля
+  togglePassword.addEventListener('click', function () {
+    const type = passwordField.type === 'password' ? 'text' : 'password';
+    passwordField.type = type;
+
+    // Меняем иконку в зависимости от состояния пароля
+    togglePassword.src = type === 'password' ? 'password-hidden.svg' : 'password-shown.svg';
+  });
+
+  // Показываем кнопку, когда в поле есть символы
+  passwordField.addEventListener('input', function () {
+    togglePassword.style.display = passwordField.value.length > 0 ? 'block' : 'none';
+  });
   </script>
 </body>
   
