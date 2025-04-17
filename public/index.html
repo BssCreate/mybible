@@ -83,59 +83,36 @@
 
   // Валидация логина и пароля
   async function validateLogin() {
-    const loginValue = loginField.value.trim().replace(/\D/g, ''); // Убираем все не-цифры
-    const passwordValue = passwordField.value.trim();
+    const login = document.getElementById("login").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    let isValid = true;
-    loginError.textContent = '';
-    passwordError.textContent = '';
-    const loginPasswordError = document.getElementById('login-password-error');
-    loginPasswordError.textContent = '';
+    try {
+      const response = await fetch('https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLiEAA6fSafn4wVbkvGKA7E39BryFhNa0TKE0cL_ZfyNshDO5gU9EPsNgKVMhWvwEvstVFAzWBv-NPAUYys2GNdAeIYHoMFz4m9rLNJ7HmoniQ8NHF_r76vhKYoiKYrrivfGWccpBD_HdiTutO1M1KWV-doC5DFwMRsi4U_58nY_Q_xIpZrqpvl_4rCayUeXB6C9--XHB_MttEEN9nBt8xRlreGuvMl16b_79J_ypTiWHYd9XS1ky0PujJ3s9KTZTzAIwAiJy2-hNHRUFHGJEK8ZC3T4uw&lib=MJehZtwQYGbxr_NY_BXuOB0TUDqEcDcnD');
+      const data = await response.json();
 
-    // Считываем пользователей из базы
-    const usersData = await fetchUsersData();
-    let userFound = false;
-    let userPassword = '';
+      let loginValid = false;
+      let passwordValid = false;
 
-    // Проверяем номер телефона и пароль
-    for (let school in usersData) {
-      for (let grade in usersData[school].classes) {
-        const classData = usersData[school].classes[grade];
-        for (let student of classData) {
-          // Убираем все нецифровые символы из номера в базе данных
-          const storedPhoneNumber = student['Номер телефона'].replace(/\D/g, '');
-          
-          if (storedPhoneNumber === loginValue) {
-            userPassword = student['Пароль'];
-            userFound = true;
-            break;
+      // Проверяем, совпадает ли логин и пароль
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].login === login) {
+          loginValid = true;
+          // Приводим пароли к строковому типу и сравниваем
+          if (data[i].password.toString() === password) {
+            passwordValid = true;
           }
+          break;  // Если нашли совпадение по логину, больше не ищем
         }
       }
-      if (userFound) break;
-    }
 
-    // Если номер не найден
-    if (!userFound) {
-      loginError.textContent = 'Введите корректный номер';
-      loginField.classList.add('error');
-      isValid = false;
-    }
-
-    // Проверка пароля
-    if (userPassword !== passwordValue) {
-      passwordError.textContent = 'Неверный пароль';
-      passwordField.classList.add('error');
-      isValid = false;
-    }
-
-    // Если все верно, то успешный вход
-    if (isValid) {
-      localStorage.setItem('login', loginValue);
-      alert('Вход успешен!');
-      window.location.href = 'user-profile.html'; // Переход на страницу с информацией
-    } else {
-      loginPasswordError.textContent = 'Неверный номер или пароль!';
+      if (loginValid && passwordValid) {
+        alert("Отлично. Вы вошли как Администратор");
+      } else {
+        document.getElementById("login-password-error").innerText = "Неверный логин или пароль";
+      }
+    } catch (error) {
+      console.error("Ошибка при получении данных из таблицы:", error);
+      document.getElementById("login-password-error").innerText = "Ошибка при подключении к серверу";
     }
   }
 
