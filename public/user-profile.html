@@ -341,10 +341,13 @@
                                 const newsCard = document.createElement('div');
                                 newsCard.classList.add('news-card');
     
+                                // Форматируем дату
+                                const formattedDate = formatDate(newsItem.date);
+    
                                 newsCard.innerHTML = `
                                     <h2>${newsItem.title}</h2>
                                     <p>${newsItem.desc}</p>
-                                    <p><strong>Дата:</strong> ${newsItem.date}</p>
+                                    <p><strong>Дата:</strong> ${formattedDate}</p>
                                 `;
     
                                 newsContainer.appendChild(newsCard);
@@ -355,8 +358,6 @@
                         console.error('Ошибка загрузки новостей:', error);
                     });
             }
-
-
     
             else if (section === 'books') {
                 content.innerHTML = `<h1>Книги</h1>
@@ -431,7 +432,15 @@
                 container.appendChild(item);
             });
         }
-</script>
+    
+        function formatDate(date) {
+            const dateObj = new Date(date);
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Месяцы начинаются с 0
+            const year = dateObj.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+    </script>
 
     
     
