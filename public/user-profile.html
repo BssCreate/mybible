@@ -325,34 +325,37 @@
             if (activeBtn) activeBtn.classList.add('active');
     
             if (section === 'news') {
-                  content.innerHTML = `<h1>Новости</h1>
+                content.innerHTML = `<h1>Новости</h1>
                     <div id="news-container"></div>`; // Контейнер для новостей
-                
-                  // Загружаем новости через API
-                  fetch('https://script.google.com/macros/s/AKfycbxWq5SIZ3ps5bib-ZRKztnD-Lfe7-EO8BLaBavusX-Iry74ZDQM_NN-cMEtYhcCN0kr/exec')
+    
+                // Загружаем новости через API
+                fetch('https://script.google.com/macros/s/AKfycbxWq5SIZ3ps5bib-ZRKztnD-Lfe7-EO8BLaBavusX-Iry74ZDQM_NN-cMEtYhcCN0kr/exec')
                     .then(response => response.json())
                     .then(data => {
-                      const newsContainer = document.getElementById('news-container');
-                      const news = data.news;
-                
-                      // Отображаем новости в виде карточек
-                      news.forEach(newsItem => {
-                        const newsCard = document.createElement('div');
-                        newsCard.classList.add('news-card');
-                
-                        newsCard.innerHTML = `
-                          <h2>${newsItem.title}</h2>
-                          <p>${newsItem.desc}</p>
-                          <p><strong>Дата:</strong> ${newsItem.date}</p>
-                        `;
-                
-                        newsContainer.appendChild(newsCard);
-                      });
+                        const newsContainer = document.getElementById('news-container');
+                        const news = data.news;
+    
+                        // Отображаем новости, фильтруя по школе
+                        news.forEach(newsItem => {
+                            if (globalUserData && globalUserData.org.school === newsItem.school) {
+                                const newsCard = document.createElement('div');
+                                newsCard.classList.add('news-card');
+    
+                                newsCard.innerHTML = `
+                                    <h2>${newsItem.title}</h2>
+                                    <p>${newsItem.desc}</p>
+                                    <p><strong>Дата:</strong> ${newsItem.date}</p>
+                                `;
+    
+                                newsContainer.appendChild(newsCard);
+                            }
+                        });
                     })
                     .catch(error => {
-                      console.error('Ошибка загрузки новостей:', error);
+                        console.error('Ошибка загрузки новостей:', error);
                     });
-                }
+            }
+
 
     
             else if (section === 'books') {
