@@ -255,531 +255,150 @@
     </div>
 
     <script>
-        let requests = []; // Глобальная переменная для заявок
+    const GOOGLE_SHEET_API = "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhPRAF8zi6FD7yI54DCNvM52dp-gKI3gGxGZB1Ouztt6NwKA-WNpgkVJul7Zr9KCcYppPFBxTNdbSOXgNEYdVOlU5yNFyimK6sjyO0jvILct5juObuBOtZZ44Ln8I5yxzPbsWaFJmQr4i8X092RugeQueIS91q_AC5tuW-QdVYD9P1h9Kkm9Gsm1PtaaTMUthYYkvuLVRy5MNa6QRoxLSqFHpi6l9aCfZO1zQBabmeQ99PsKXQmHO-hC_7-jEE_7lhaEULubCMmhVb9E1kWmrxK0YSk0g&lib=MJehZtwQYGbxr_NY_BXuOB0TUDqEcDcnD"; // вставь сюда свою ссылку
 
-        async function changeContent(section) {
-            const content = document.getElementById('content');
-            const userRole = await checkUserRole();
+    async function changeContent(section) {
+        const content = document.getElementById('content');
+        document.querySelectorAll('.navbar button').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.getElementById(`${section}Button`);
+        if (activeBtn) activeBtn.classList.add('active');
 
-            if (section === 'books' && userRole === 'Администратор') {
-                section = 'requests';
-            }
-
-            // Очищаем активное состояние у всех кнопок
-            document.querySelectorAll('.navbar button').forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // Устанавливаем активное состояние только на нужную кнопку
-            const activeButton = document.getElementById(`${section}Button`);
-            if (activeButton) {
-                activeButton.classList.add('active');
-            }
-
-            if (section === 'news') {
-                content.innerHTML = `<h1>Новости</h1><p>Здесь будут отображаться последние новости.</p>`;
-            } else if (section === 'books') {
-                content.innerHTML = `<h1>Книги</h1>
-                    <div class="book-list" id="book-container">
-                        <div class="book-header">
-                            <div class="book-date">Дата выдачи</div>
-                            <div class="book-title">Автор и заглавие книги</div>
-                        </div>
-                    </div>`;
-                loadBooks();
-            } else if (section === 'requests') {
-                content.innerHTML = `<h1>Заявки</h1>
-                    <div id="requests-container"></div>`;
-                loadRequests();
-            } else if (section === 'profile') {
-                content.innerHTML = `<h1>Профиль</h1>
-                    <div id="profile-inf">
-                        <div id="student-info"></div>
+        if (section === 'news') {
+            content.innerHTML = `<h1>Новости</h1><p>Здесь будут отображаться последние новости.</p>`;
+        } else if (section === 'books') {
+            content.innerHTML = `<h1>Книги</h1>
+                <div class="book-list" id="book-container">
+                    <div class="book-header">
+                        <div class="book-date">Дата выдачи</div>
+                        <div class="book-title">Автор и заглавие книги</div>
                     </div>
-                    <div id="notifications" class="notifications-box">
-                        <h3>Последние уведомления</h3>
-                        <div id="notifications-list"></div>
-                    </div>`;
-                loadStudentInfo();
-                loadNotifications();
-            }
+                </div>`;
+            loadBooks();
+        } else if (section === 'profile') {
+            content.innerHTML = `<h1>Профиль</h1>
+                <div id="profile-inf"><div id="student-info"></div></div>
+                <div id="notifications" class="notifications-box">
+                    <h3>Последние уведомления</h3>
+                    <div id="notifications-list"></div>
+                </div>`;
+            loadStudentInfo();
+            loadNotifications();
         }
+    }
 
-        // Обновляем кнопки в навигации
-        updateNavButtons().then(() => {
-            changeContent('books');
-        });
+    changeContent('books'); // запуск по умолчанию
 
-        async function updateNavButtons() {
-            const userRole = await checkUserRole();
-            const booksButton = document.getElementById('booksButton');
+    async function fetchUserData() {
+        const response = await fetch(GOOGLE_SHEET_API);
+        const data = await response.json();
+        return data.list1 || [];
+    }
 
-            if (userRole === 'Администратор') {
-                booksButton.textContent = 'Заявки';
-                booksButton.setAttribute('onclick', "changeContent('requests')");
-                booksButton.id = 'requestsButton'; // Меняем ID, чтобы он правильно работал в changeContent()
-            }
-        }
-        async function checkUserRole() {
-            const usersData = await fetch('users.json').then(response => response.json());
-            const loginValue = localStorage.getItem('login');
+    function normalizePhone(phone) {
+        return (phone || "").replace(/[^\d]/g, "");
+    }
 
-            if (!loginValue) return null;
-
-            const cleanedLoginValue = loginValue.replace(/\D/g, '');
-            for (let school in usersData) {
-                for (let grade in usersData[school].classes) {
-                    const classData = usersData[school].classes[grade];
-                    for (let student of classData) {
-                        const storedPhoneNumber = student['Номер телефона'].replace(/\D/g, '');
-                        if (storedPhoneNumber === cleanedLoginValue) {
-                            return student['Роль'] || 'Пользователь';
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-
-    
-        async function loadStudentInfo() {
-            const usersData = await fetch('users.json').then(response => response.json());
-            const loginValue = localStorage.getItem('login');
-    
-            if (!loginValue) {
-                document.getElementById('student-info').innerHTML = 'Номер телефона не найден в localStorage.';
-                return;
-            }
-    
-            const cleanedLoginValue = loginValue.replace(/\D/g, '');
-    
-            let studentInfo = '';
-            let userFound = false;
-    
-            for (let school in usersData) {
-                for (let grade in usersData[school].classes) {
-                    const classData = usersData[school].classes[grade];
-                    for (let student of classData) {
-                        const storedPhoneNumber = student['Номер телефона'].replace(/\D/g, '');
-                        if (storedPhoneNumber === cleanedLoginValue) {
-                            let educationOrRole = student['Образование'];
-                            let label = 'Класс';
-
-                            // Если "Образование" отсутствует или undefined, проверяем "Роль"
-                            if (!educationOrRole) {
-                                educationOrRole = student['Роль'] || 'Не указано';
-                                label = 'Роль';
-                            }
-
-                            studentInfo = `
-                            <p>${student['Фамилия']} ${student['Имя']} ${student['Отчество']}</p>
-                            <p>${label}: ${educationOrRole}</p>
-                            `;
-                            userFound = true;
-                            break;
-                        }
-                    }
-                }
-                if (userFound) break;
-            }
-
-
-    
-            document.getElementById('student-info').innerHTML = userFound ? studentInfo : 'Пользователь не найден.';
-        }
-
-        function loadNotifications() {
-            const notifications = [
-                "Уведомление 1: Пожалуйста, верните книгу до конца месяца.",
-                "Уведомление 2: Новый учебный материал доступен.",
-                "Уведомление 3: Ваши оценки обновлены."
-            ];
-            
-            const notificationsList = document.getElementById('notifications-list');
-            notificationsList.innerHTML = ''; // Очищаем список уведомлений
-
-            notifications.forEach(notification => {
-                const notificationItem = document.createElement('p');
-                notificationItem.textContent = notification;
-                notificationsList.appendChild(notificationItem);
-            });
-        }
-
-    
-        async function loadBooks() {
-            const usersData = await fetch('users.json').then(response => response.json());
-            const loginValue = localStorage.getItem('login');
-    
-            if (!loginValue) {
-                document.getElementById('book-container').innerHTML += '<p>Номер телефона не найден в localStorage.</p>';
-                return;
-            }
-    
-            const cleanedLoginValue = loginValue.replace(/\D/g, '');
-            let userRole = null;
-            let userFound = false;
-
-            for (let school in usersData) {
-                for (let grade in usersData[school].classes) {
-                    const classData = usersData[school].classes[grade];
-                    for (let student of classData) {
-                        const storedPhoneNumber = student['Номер телефона'].replace(/\D/g, '');
-                        if (storedPhoneNumber === cleanedLoginValue) {
-                            userRole = student['Роль'] || 'Пользователь';
-                            userFound = true;
-                            break;
-                        }
-                    }
-                }
-                if (userFound) break;
-            }
-
-            // Если роль Администратор, заменяем "books" на "requests"
-            if (section === 'books' && userRole === 'Администратор') {
-                section = 'requests';
-            }
-
-            if (section === 'news') {
-                content.innerHTML = `<h1>Новости</h1><p>Здесь будут отображаться последние новости.</p>`;
-            } else if (section === 'books') {
-                content.innerHTML = `<h1>Книги</h1>
-                    <div class="book-list" id="book-container">
-                        <div class="book-header">
-                            <div class="book-date">Дата выдачи</div>
-                            <div class="book-title">Автор и заглавие книги</div>
-                        </div>
-                    </div>`;
-                loadBooks(); // Загружаем список книг
-            } else if (section === 'requests') {
-                content.innerHTML = `<h1>Заявки</h1>
-                    <div id="requests-container"></div>`;
-                loadRequests(); // Загружаем список заявок (функция должна быть реализована отдельно)
-            }
-        }
-
-        // Вызываем функцию смены контента
-        changeContent('books');
-
-        async function loadRequests() {
-        const response = await fetch('http://192.168.0.17:3000/get-requests');
-        requests = await response.json(); // Обновляем глобальную переменную заявок
-        const container = document.getElementById('requests-container');
-
-        if (requests.length === 0) {
-            container.innerHTML = "<p>Заявок пока нет.</p>";
+    async function loadStudentInfo() {
+        const orgs = await fetchUserData();
+        const login = localStorage.getItem('login');
+        if (!login) {
+            document.getElementById('student-info').innerText = "Телефон не найден.";
             return;
         }
+        const normalizedLogin = normalizePhone(login);
+        let found = false;
+        let html = "";
 
-        container.innerHTML = ''; // Очищаем контейнер перед добавлением новых заявок
-
-        const activeRequests = [];
-        const archivedRequests = [];
-
-        // Разделяем заявки на активные и архивные
-        requests.forEach((req) => {
-            if (req.archive) {
-                archivedRequests.push(req);
-            } else {
-                activeRequests.push(req);
-            }
-        });
-
-        // Функция для рендеринга списка заявок
-        function renderRequests(list) {
-        list.forEach((req, index) => {
-            const requestElement = document.createElement("div");
-            requestElement.className = "request-item";
-            requestElement.style.padding = '10px';
-            requestElement.style.margin = '10px 0';
-            requestElement.style.border = '1px solid #ddd';
-            requestElement.style.borderRadius = '8px';
-            requestElement.style.cursor = 'pointer';
-
-            // Статус заявки с эмодзи
-            let statusEmoji = '⏳';  // Стандартный статус (на рассмотрении)
-            let statusText = 'На рассмотрении';
-            
-            if (req.status === 'Принята') {
-                statusEmoji = '✔️';
-                statusText = 'Принята';
-            } else if (req.status === 'Отклонена') {
-                statusEmoji = '❌';
-                statusText = 'Отклонена';
-            } else if (req.status === 'Тайм-аут') {
-                statusEmoji = '🔒';  // Эмодзи для тайм-аута
-                statusText = 'Тайм-аут';
-            }
-
-            // Дата принятия/отклонения (если есть)
-            const decisionDate = req.acceptedAt ? `<p><b>Дата ${req.status === 'Принята' ? 'принятия' : 'отклонения'}:</b> ${req.acceptedAt}</p>` : '';
-
-            // Преобразуем ISO-форматированную дату в локализованное строковое представление
-            const timeoutDate = req.timeoutAt ? 
-                `<p><b>Дата тайм-аута:</b> ${new Date(req.timeoutAt).toLocaleString('ru-RU', { timeZone: 'Asia/Novosibirsk' })}</p>` 
-                : '';
-
-
-            // Отображаем элементы заявки
-            requestElement.innerHTML = `
-                <h3>Заявка №${req.numzav} ${statusEmoji} (${statusText})</h3> <!-- Показываем номер заявки -->
-                <p><b>Учебная организация:</b> ${req.name}</p>
-                <p><b>Дата отправки:</b> ${req.submittedAt}</p>
-                ${decisionDate}
-                ${timeoutDate}
-            `;
-
-            requestElement.onclick = () => showRequestDetails(requests.indexOf(req)); // Передаем индекс для открытия деталей
-
-            container.appendChild(requestElement);
-        });
-    }
-
-    // Отображаем активные заявки
-    if (activeRequests.length > 0) {
-        renderRequests(activeRequests);
-    }
-
-    // Добавляем раздел "Архив", если есть архивные заявки
-    if (archivedRequests.length > 0) {
-        const archiveTitle = document.createElement("h2");
-        archiveTitle.innerText = "Архив";
-        archiveTitle.style.marginTop = "20px";
-        container.appendChild(archiveTitle);
-        
-        renderRequests(archivedRequests);
-    }
-        }
-
-
-
-
-        function showRequestDetails(index) {
-        const request = requests[index];
-        const content = document.getElementById('content');
-
-        content.innerHTML = `
-            <div style="position: relative;">
-                <button id="backBtn" style="
-                    position: absolute;
-                    top: 10px;
-                    left: 10px;
-                    background: transparent;
-                    border: none;
-                    font-size: 24px;
-                    font-weight: bold;
-                    color: #007bff;
-                    cursor: pointer;
-                ">&lt;</button>
-            </div>
-            
-            <h1 style="text-align: center; margin-top: 30px;">Заявка №${index + 1}</h1>
-            <p><b>Учебная организация:</b> ${request.name}</p>
-            <p><b>Адрес:</b> ${request.address}</p>
-            <p><b>Район:</b> ${request.district}</p>
-            <p><b>Email:</b> ${request.email}</p>
-            <p><b>Телефон:</b> ${request.phone}</p>
-            <p><b>Статус:</b> ${request.status || 'На рассмотрении'}</p>
-            <p><b>Дата отправки:</b> ${request.submittedAt}</p>
-        `;
-
-        if (request.acceptedAt) {
-            content.innerHTML += `<p><b>Дата ${request.status === 'Принята' ? 'принятия' : 'отклонения'}:</b> ${request.acceptedAt}</p>`;
-        }
-
-        // Если заявка не архивная, показываем кнопки
-        if (!request.archive) {
-            content.innerHTML += `
-                <div style="display: flex; gap: 10px; margin-top: 20px;">
-                    <button id="acceptRequestBtn" style="
-                        background-color: #007bff;
-                        color: white;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        font-size: 16px;
-                    ">Принять</button>
-                    
-                    <button id="rejectRequestBtn" style="
-                        background: white;
-                        color: #007bff;
-                        border: 2px solid #007bff;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        font-size: 16px;
-                    ">Отклонить</button>
-                    
-                    <button id="timeoutRequestBtn" style="
-                        background: #f39c12;
-                        color: white;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        font-size: 16px;
-                    ">Тайм-аут</button>
-                </div>
-            `;
-
-            // Обработчик для кнопки "Принять"
-            document.getElementById('acceptRequestBtn').onclick = async () => {
-                request.status = 'Принята';
-                request.acceptedAt = new Date().toLocaleString("ru-RU", { timeZone: 'Asia/Novosibirsk' });
-                request.archive = true;
-                await updateRequestInDatabase(request);
-                showRequestDetails(index);
-            };
-
-            // Обработчик для кнопки "Отклонить"
-            document.getElementById('rejectRequestBtn').onclick = async () => {
-                rejectRequest(index);
-            };
-
-            // Обработчик для кнопки "Тайм-аут"
-            document.getElementById('timeoutRequestBtn').onclick = () => {
-                // Открываем окно выбора времени для тайм-аута
-                showTimeoutModal(index, request);
-            };
-        }
-
-        // Обработчик на кнопку "Назад"
-        document.getElementById('backBtn').onclick = () => {
-            content.innerHTML = `<h1>Заявки</h1><div id="requests-container"></div>`;
-            loadRequests();
-        };
-    }
-
-    function showTimeoutModal(index, request) {
-        const modal = document.createElement('div');
-        modal.style.position = 'fixed';
-        modal.style.top = '0';
-        modal.style.left = '0';
-        modal.style.width = '100%';
-        modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        modal.style.display = 'flex';
-        modal.style.justifyContent = 'center';
-        modal.style.alignItems = 'center';
-
-        const modalContent = document.createElement('div');
-        modalContent.style.backgroundColor = '#fff';
-        modalContent.style.padding = '20px';
-        modalContent.style.borderRadius = '8px';
-        modalContent.style.textAlign = 'center';
-        modalContent.innerHTML = `
-            <h2>Выберите время для тайм-аута</h2>
-            <div style="margin: 10px 0;">
-                <button class="timeout-option" data-time="10">10 минут</button>
-                <button class="timeout-option" data-time="30">30 минут</button>
-                <button class="timeout-option" data-time="60">1 час</button>
-                <button class="timeout-option" data-time="1440">1 день</button>
-            </div>
-            <button id="closeTimeoutModal" style="background-color: #e74c3c; color: white; border: none; padding: 10px; border-radius: 5px;">Закрыть</button>
-        `;
-
-        modal.appendChild(modalContent);
-        document.body.appendChild(modal);
-
-        // Обработчик для выбора времени тайм-аута
-        const timeoutOptions = document.querySelectorAll('.timeout-option');
-        timeoutOptions.forEach(option => {
-            option.onclick = async () => {
-                const time = parseInt(option.getAttribute('data-time'), 10);
-                const timeoutDate = new Date();
-                timeoutDate.setMinutes(timeoutDate.getMinutes() + time);
-
-                console.log('Setting timeout at:', timeoutDate); // Проверка
-
-                request.status = 'Тайм-аут';
-                // Используем toISOString для передачи даты в формате ISO
-                request.timeoutAt = timeoutDate.toISOString();  
-
-                // Обновляем заявку с тайм-аутом
-                try {
-                    await updateRequestInDatabase(request);
-                    console.log('Request updated successfully');
-                    showRequestDetails(index);
-                } catch (error) {
-                    console.error('Error updating request:', error);
+        for (const org of orgs) {
+            const studentsJson = JSON.parse(org.students_json || "{}");
+            for (const className in studentsJson) {
+                for (const student of studentsJson[className]) {
+                    const studentPhone = normalizePhone(student["Номер телефона"]);
+                    if (studentPhone === normalizedLogin) {
+                        const label = student["Образование"] ? "Класс" : "Роль";
+                        const value = student["Образование"] || student["Роль"] || "Не указано";
+                        html = `
+                            <p>${student["Фамилия"]} ${student["Имя"]} ${student["Отчество"]}</p>
+                            <p>${label}: ${value}</p>
+                        `;
+                        found = true;
+                        break;
+                    }
                 }
-
-                // Закрываем модальное окно
-                document.body.removeChild(modal);
-            };
-        });
-
-
-        // Закрыть модальное окно
-        document.getElementById('closeTimeoutModal').onclick = () => {
-            document.body.removeChild(modal);
-        };
-    }
-
-
-    // Пример updateRequestInDatabase с отладочной информацией
-    async function updateRequestInDatabase(request) {
-        try {
-            const response = await fetch('/update-request', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(request),
-            });
-
-            if (!response.ok) {
-                throw new Error('Не удалось обновить заявку');
+                if (found) break;
             }
+            if (found) break;
+        }
 
-            console.log('Request updated:', request);
-        } catch (error) {
-            console.error('Error updating request:', error);
-            throw error;
+        document.getElementById("student-info").innerHTML = found ? html : "Пользователь не найден.";
+    }
+
+    async function loadBooks() {
+        const response = await fetch(GOOGLE_SHEET_API);
+        const data = await response.json();
+        const orgs = data.list1 || [];
+    
+        const login = localStorage.getItem('login');
+        if (!login) {
+            document.getElementById('book-container').innerHTML += '<p>Номер телефона не найден.</p>';
+            return;
+        }
+    
+        const cleanedLogin = login.replace(/\D/g, '');
+        const container = document.getElementById('book-container');
+        let found = false;
+    
+        for (const org of orgs) {
+            const studentsJson = JSON.parse(org.students_json || "{}");
+            for (const className in studentsJson) {
+                const students = studentsJson[className];
+                for (const student of students) {
+                    const phone = (student["Номер телефона"] || "").replace(/\D/g, '');
+                    if (phone === cleanedLogin) {
+                        if (Array.isArray(student.books) && student.books.length > 0) {
+                            student.books.forEach(book => {
+                                const bookItem = document.createElement('div');
+                                bookItem.className = "book-item";
+                                bookItem.innerHTML = `
+                                    <div class="book-date">${book["Дата выдачи"] || "-"}</div>
+                                    <div class="book-title">${book["Автор и заглавие книги"] || "Без названия"}</div>
+                                `;
+                                container.appendChild(bookItem);
+                            });
+                        } else {
+                            container.innerHTML += `<p>Книги не найдены.</p>`;
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) break;
+            }
+            if (found) break;
+        }
+    
+        if (!found) {
+            container.innerHTML += `<p>Ученик не найден.</p>`;
         }
     }
 
 
-
-
-    async function acceptRequest(index) {
-        const request = requests[index];
-        request.status = 'Принята';
-        request.acceptedAt = new Date().toLocaleString("ru-RU", { timeZone: 'Asia/Novosibirsk' });
-        request.archive = true;
-
-        // Отправляем запрос на сервер, чтобы обновить заявку по уникальному номеру
-        await updateRequestInDatabase(request);
-
-        // Обновляем отображение заявок
-        loadRequests();
-    }
-
-    async function rejectRequest(index) {
-        const request = requests[index];
-        request.status = 'Отклонена';
-        request.archive = true; // Помечаем как архивную
-        request.acceptedAt = new Date().toLocaleString("ru-RU", { timeZone: 'Asia/Novosibirsk' });
-
-        // Отправляем запрос на сервер, чтобы обновить заявку по уникальному номеру
-        await updateRequestInDatabase(request);
-
-        // Обновляем отображение заявки (а не весь список)
-        showRequestDetails(index);
-    }
-
-    async function updateRequestInDatabase(updatedRequest) {
-        const response = await fetch('http://192.168.0.17:3000/update-request', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updatedRequest) // Включаем numzav
+    function loadNotifications() {
+        const notifications = [
+            "Уведомление 1: Пожалуйста, верните книгу до конца месяца.",
+            "Уведомление 2: Новый учебный материал доступен.",
+            "Уведомление 3: Ваши оценки обновлены."
+        ];
+        const list = document.getElementById("notifications-list");
+        list.innerHTML = "";
+        notifications.forEach(note => {
+            const p = document.createElement("p");
+            p.textContent = note;
+            list.appendChild(p);
         });
-
-        if (!response.ok) {
-            console.error("Ошибка при обновлении заявки.");
-        }
     }
-    </script>
+</script>
+
     
     
 </body>
