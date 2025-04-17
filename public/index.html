@@ -30,7 +30,7 @@
   const togglePassword = document.getElementById('toggle-password');
   const loginError = document.getElementById('login-error');
   const passwordError = document.getElementById('password-error');
-
+  
   // Форматирование телефона для отображения
   function formatPhoneNumber(value) {
     let numbers = value.replace(/\D/g, ""); // Убираем все не-цифры
@@ -89,13 +89,15 @@
     let isValid = true;
     loginError.textContent = '';
     passwordError.textContent = '';
+    const loginPasswordError = document.getElementById('login-password-error');
+    loginPasswordError.textContent = '';
 
     // Считываем пользователей из базы
     const usersData = await fetchUsersData();
     let userFound = false;
     let userPassword = '';
 
-    // Проверяем номер телефона
+    // Проверяем номер телефона и пароль
     for (let school in usersData) {
       for (let grade in usersData[school].classes) {
         const classData = usersData[school].classes[grade];
@@ -132,6 +134,8 @@
       localStorage.setItem('login', loginValue);
       alert('Вход успешен!');
       window.location.href = 'user-profile.html'; // Переход на страницу с информацией
+    } else {
+      loginPasswordError.textContent = 'Неверный номер или пароль!';
     }
   }
 
@@ -141,17 +145,13 @@
     passwordField.type = type;
 
     // Меняем иконку в зависимости от состояния пароля
-    togglePassword.src = type === 'password' ?
-      'password-hidden.svg' : 'password-shown.svg';
+    togglePassword.src = type === 'password' ? 'password-hidden.svg' : 'password-shown.svg';
   });
 
   // Показываем кнопку, когда в поле есть символы
   passwordField.addEventListener('input', function () {
     togglePassword.style.display = passwordField.value.length > 0 ? 'block' : 'none';
   });
-</script>
-
-
-
+  </script>
 </body>
 </html>
