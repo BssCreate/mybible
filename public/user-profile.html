@@ -281,6 +281,35 @@
     text-decoration: underline;
 }
 
+.news-meta {
+    color: #9d9d9d;
+    font-size: 15px;
+    margin: 8px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.news-meta span {
+    font-size: 13px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.tag-default {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.tag-app {
+    border: 1px solid #1e90ff;
+    background-color: transparent;
+    color: #000;
+}
+
+
 
         * {
             outline: none;
@@ -384,7 +413,7 @@
     
             if (section === 'news') {
                 content.innerHTML = `<h1>Новости</h1>
-                    <div id="news-container"></div>`; // Контейнер для новостей
+                    <div id="news-container"></div>`;
             
                 const newsContainer = document.getElementById('news-container');
             
@@ -393,7 +422,6 @@
                     return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
                 }
             
-                // Отображаем новости
                 newsData.forEach(newsItem => {
                     const isMatchingSchool = globalUserData && globalUserData.org.school === newsItem.school;
                     const isAppTag = newsItem.school.startsWith("Приложение:");
@@ -401,34 +429,31 @@
                     if (isMatchingSchool || isAppTag) {
                         const newsCard = document.createElement('div');
                         newsCard.classList.add('news-card');
-            
-                        const formattedDate = formatDate(newsItem.date);
-            
-                        // Хештеги
-                        let tagsHTML = `<span style="background-color: #f0f0f0; color: #333; padding: 2px 8px; border-radius: 999px; margin-left: 10px; font-size: 13px;">#Школа</span>`;
+                        
+                        // Генерация тегов
+                        let tagsHTML = `<span class="tag-default">#Школа</span>`;
             
                         if (isAppTag) {
-                            const tagTextRaw = newsItem.school.split(":")[1].trim(); // строка после "Приложение:"
-                            const tagItems = tagTextRaw.split(",").map(t => t.trim());
-            
+                            const tagRaw = newsItem.school.split(":")[1].trim();
+                            const tagItems = tagRaw.split(",").map(t => t.trim());
                             tagsHTML = tagItems.map(tag =>
-                                `<span style="border: 1px solid #1e90ff; background: transparent; color: #000; padding: 2px 8px; border-radius: 999px; margin-left: 10px; font-size: 13px;">#${tag}</span>`
-                            ).join("");
+                                `<span class="tag-app">#${tag}</span>`
+                            ).join(" ");
                         }
             
                         newsCard.innerHTML = `
                             <h2>${newsItem.title}</h2>
                             <p>${convertLinks(newsItem.desc)}</p>
-                            <div style="display: flex; align-items: center; gap: 5px;">
-                                <p style="color: #9d9d9d; font-size: 15px; margin: 0;">${newsItem.date}</p>
-                                ${tagsHTML}
-                            </div>
+                            <p class="news-meta">
+                                ${newsItem.date} ${tagsHTML}
+                            </p>
                         `;
             
                         newsContainer.appendChild(newsCard);
                     }
                 });
             }
+
     
             else if (section === 'books') {
                 content.innerHTML = `<h1>Книги</h1>
