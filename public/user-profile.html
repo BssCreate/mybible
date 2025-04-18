@@ -420,7 +420,7 @@
                             <h2>${newsItem.title}</h2>
                             <p>${convertLinks(newsItem.desc)}</p>
                             <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 5px;">
-                                <p style="color: #9d9d9d; font-size: 15px; margin: 0;">${newsItem.date}</p>
+                                <p style="color: #9d9d9d; font-size: 15px; margin: 0;">${formattedDate}</p>
                                 ${tagsHTML}
                             </div>
                         `;
@@ -429,9 +429,6 @@
                     }
                 });
             }
-
-
-
     
             else if (section === 'books') {
                 content.innerHTML = `<h1>Книги</h1>
