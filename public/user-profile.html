@@ -246,7 +246,7 @@
             }
 
         #news-container {
-  justify-content: space-evenly;
+  justify-content: center;
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -496,7 +496,8 @@
             }
     
             else if (section === 'profile') {
-                content.innerHTML = `<div id="profile-header" class="sticky-header">Профиль</div>
+                content.innerHTML = `
+                    <div id="profile-header" class="sticky-header">Профиль</div>
                     <div id="profile-inf">
                         <div id="student-info"></div>
                     </div>
@@ -506,10 +507,30 @@
                             <p>В разработке.</p>
                         </div>
                     </div>
-                    `;
+                    <button id="logout-btn" style="
+                        margin: 30px auto 20px;
+                        display: block;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        border: 1px solid red;
+                        background-color: white;
+                        color: red;
+                        border-radius: 8px;
+                        cursor: pointer;
+                    ">
+                        Выйти
+                    </button>
+                `;
                 renderStudentInfo();
+            
+                // Обработчик выхода
+                document.getElementById("logout-btn").addEventListener("click", () => {
+                    localStorage.removeItem("savedLogin");
+                    localStorage.removeItem("savedPassword");
+                    window.location.href = "index.html"; // назад на страницу входа
+                });
             }
-        }
+
 
         function convertLinks(text) {
             const urlRegex = /(https?:\/\/[^\s]+)/g;
