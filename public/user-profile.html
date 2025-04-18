@@ -387,8 +387,9 @@
                         const formattedDate = formatDate(newsItem.date);
     
                         newsCard.innerHTML = `
-                            <h2>${newsItem.title}</h2> • <p style="color: #cac4b0">Дата: ${newsItem.date}</p>
+                            <h2>${newsItem.title}</h2>
                             <p>${newsItem.desc}</p>
+                            <p style="color: #9d9d9d; font-size: 15px;">${newsItem.date}</p>
                         `;
     
                         newsContainer.appendChild(newsCard);
