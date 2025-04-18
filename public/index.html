@@ -8,32 +8,55 @@
   <style>
     /* Стиль для затемнения экрана */
     .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: none;
-      justify-content: center;
-      align-items: center;
+
     }
 
-    /* Стиль для анимации загрузки */
-    .loader {
-      border: 6px solid #f3f3f3; /* Серая фоновая часть */
-      border-top: 6px solid #3498db; /* Синий цвет для вращающейся части */
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 2s linear infinite;
-    }
+    #loadingScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(255 255 255);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
+        .loader {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              gap: 6px;
+              height: 60px;
+            }
+            
+            .loader span {
+              width: 10px;
+              height: 10px;
+              background-color: #67c2ff;
+              border-radius: 50%;
+              animation: bounce 1s infinite ease-in-out;
+            }
+            
+            .loader span:nth-child(1) { animation-delay: 0s; }
+            .loader span:nth-child(2) { animation-delay: 0.1s; }
+            .loader span:nth-child(3) { animation-delay: 0.2s; }
+            .loader span:nth-child(4) { animation-delay: 0.3s; }
+            .loader span:nth-child(5) { animation-delay: 0.4s; }
+            
+            @keyframes bounce {
+              0%, 80%, 100% {
+                transform: scale(0.6);
+                opacity: 0.3;
+              }
+              40% {
+                transform: scale(1);
+                opacity: 1;
+              }
+            }
+    
     .error-message {
       color: red;
       font-size: 12px;
@@ -68,7 +91,15 @@
 
   <!-- Элемент для затемнения экрана и отображения анимации -->
   <div class="overlay" id="overlay">
-    <div class="loader"></div>
+    <div id="loadingScreen">
+        <div class="loader">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+    </div>
   </div>
 
   <script>
