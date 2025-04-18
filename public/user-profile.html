@@ -422,7 +422,19 @@
                     return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
                 }
             
-                newsData.forEach(newsItem => {
+                // ✅ Сортируем по дате (новые сверху), при равенстве — последние по счёту первыми
+                const sortedNews = [...newsData].sort((a, b) => {
+                    const dateA = new Date(a.date.split('.').reverse().join('-'));
+                    const dateB = new Date(b.date.split('.').reverse().join('-'));
+            
+                    if (dateA < dateB) return 1;
+                    if (dateA > dateB) return -1;
+            
+                    // Если дата одинаковая — по порядку в таблице: чем позже в списке, тем выше
+                    return newsData.indexOf(b) - newsData.indexOf(a);
+                });
+            
+                sortedNews.forEach(newsItem => {
                     const isMatchingSchool = globalUserData && globalUserData.org.school === newsItem.school;
                     const isAppTag = newsItem.school.startsWith("Приложение:");
             
@@ -453,6 +465,7 @@
                     }
                 });
             }
+
 
 
     
