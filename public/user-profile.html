@@ -309,6 +309,17 @@
     color: #000;
 }
 
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background-color: white; /* или любой другой цвет фона */
+    padding: 15px 20px;
+    font-size: 28px;
+    font-weight: bold;
+    z-index: 100;
+    border-bottom: 1px solid #ccc;
+}
+
 
 
         * {
@@ -412,8 +423,9 @@
             if (activeBtn) activeBtn.classList.add('active');
     
             if (section === 'news') {
-                content.innerHTML = `<h1>Новости</h1>
-                    <div id="news-container"></div>`;
+                content.innerHTML = `
+                <div id="news-header" class="sticky-header">Новости</div>
+                <div id="news-container"></div>`;
             
                 const newsContainer = document.getElementById('news-container');
             
@@ -470,7 +482,7 @@
 
     
             else if (section === 'books') {
-                content.innerHTML = `<h1>Книги</h1>
+                content.innerHTML = `<div id="books-header" class="sticky-header">Книги</div>
                     <div class="book-list" id="book-container">
                         <div class="book-header">
                             <div class="book-date">Дата выдачи</div>
@@ -481,7 +493,7 @@
             }
     
             else if (section === 'profile') {
-                content.innerHTML = `<h1>Профиль</h1>
+                content.innerHTML = `<div id="profile-header" class="sticky-header">Профиль</div>
                     <div id="profile-inf">
                         <div id="student-info"></div>
                     </div>
