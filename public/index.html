@@ -47,7 +47,7 @@
 </head>
 <body>
   <div class="login-container">
-    <h2>ГИС НСО «Моя Библиотека»</h2>
+    <h2>«Моя Библиотека»</h2>
     <div class="input-group">
       <input type="text" id="login" placeholder=" " required />
       <label for="login">Номер телефона</label>
@@ -59,6 +59,10 @@
       <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
       <div id="login-password-error" class="error-message"></div>
     </div>
+      <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+        <input type="checkbox" id="rememberMe" />
+        <label for="rememberMe" style="font-size: 14px;">Запомнить меня</label>
+      </div>
     <button class="login-button" onclick="validateLogin()">Войти</button>
   </div>
 
@@ -145,7 +149,13 @@
               const studentPass = student["Пароль"]?.toString() || '';
               if (studentPhone === login && studentPass === password) {
                 success = true;
-                localStorage.setItem("login", login); // сохраняем номер телефона в localStorage
+                if (document.getElementById("rememberMe").checked) {
+                  localStorage.setItem("savedLogin", login);
+                  localStorage.setItem("savedPassword", password);
+                } else {
+                  localStorage.removeItem("savedLogin");
+                  localStorage.removeItem("savedPassword");
+                }
                 window.location.href = "user-profile.html"; // переход на страницу профиля
                 break;
               }
@@ -181,6 +191,21 @@
   passwordField.addEventListener('input', function () {
     togglePassword.style.display = passwordField.value.length > 0 ? 'block' : 'none';
   });
+
+  // Если данные уже сохранены — пробуем войти автоматически
+window.addEventListener("DOMContentLoaded", () => {
+  const savedLogin = localStorage.getItem("savedLogin");
+  const savedPassword = localStorage.getItem("savedPassword");
+
+  if (savedLogin && savedPassword) {
+    document.getElementById("rememberMe").checked = true;
+    document.getElementById("login").value = "+7 " + savedLogin.slice(1); // форматируем
+    document.getElementById("password").value = savedPassword;
+    validateLogin();
+  }
+});
+
+    
   </script>
 </body>
   
