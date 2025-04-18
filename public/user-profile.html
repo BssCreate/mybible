@@ -259,9 +259,9 @@
   transition: transform 0.3s;
 }
 
-.news-card:hover {
+/* .news-card:hover {
   transform: translateY(-10px);
-}
+} */
 
 .news-card h2 {
   margin: 0 0 10px;
@@ -387,9 +387,8 @@
                         const formattedDate = formatDate(newsItem.date);
     
                         newsCard.innerHTML = `
-                            <h2>${newsItem.title}</h2>
+                            <h2>${newsItem.title}</h2> • <p style="color: #cac4b0">Дата: ${newsItem.date}</p>
                             <p>${newsItem.desc}</p>
-                            <p><strong>Дата:</strong> ${formattedDate}</p>
                         `;
     
                         newsContainer.appendChild(newsCard);
