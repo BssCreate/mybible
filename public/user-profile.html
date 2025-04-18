@@ -312,15 +312,15 @@
 .sticky-header {
     position: sticky;
     top: 0;
-    background-color: white; /* или любой другой цвет фона */
-    padding: 15px 20px;
+    width: 100%; /* На всю ширину */
+    background-color: white; /* Можешь поменять цвет */
+    padding: 20px 30px; /* Отступы сверху/снизу и по бокам */
     font-size: 28px;
     font-weight: bold;
-    z-index: 100;
+    z-index: 999; /* Поверх всего */
     border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Лёгкая тень */
 }
-
-
 
         * {
             outline: none;
