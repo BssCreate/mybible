@@ -269,6 +269,17 @@
 
 .news-card p {
   margin: 5px 0;
+  text-align: justify;
+  white-space: pre-wrap; /* сохраняет переносы строк */
+}
+
+.news-card a {
+    color: #1e90ff;
+    text-decoration: none;
+}
+
+.news-card a:hover {
+    text-decoration: underline;
 }
 
 
@@ -375,27 +386,33 @@
             if (section === 'news') {
                 content.innerHTML = `<h1>Новости</h1>
                     <div id="news-container"></div>`; // Контейнер для новостей
-    
+            
                 const newsContainer = document.getElementById('news-container');
-
+            
+                function convertLinks(text) {
+                    const urlRegex = /(https?:\/\/[^\s]+)/g;
+                    return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
+                }
+            
                 // Отображаем новости
                 newsData.forEach(newsItem => {
                     if (globalUserData && globalUserData.org.school === newsItem.school) {
                         const newsCard = document.createElement('div');
                         newsCard.classList.add('news-card');
-    
+            
                         const formattedDate = formatDate(newsItem.date);
-    
+            
                         newsCard.innerHTML = `
                             <h2>${newsItem.title}</h2>
-                            <p>${newsItem.desc}</p>
-                            <p style="color: #9d9d9d; font-size: 15px;">${newsItem.date}</p>
+                            <p>${convertLinks(newsItem.desc)}</p>
+                            <p style="color: #9d9d9d; font-size: 15px;">${formattedDate}</p>
                         `;
-    
+            
                         newsContainer.appendChild(newsCard);
                     }
                 });
             }
+
     
             else if (section === 'books') {
                 content.innerHTML = `<h1>Книги</h1>
@@ -423,7 +440,12 @@
                 renderStudentInfo();
             }
         }
-    
+
+        function convertLinks(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
+        }
+
         function renderStudentInfo() {
             const container = document.getElementById("student-info");
             if (!globalUserData) {
