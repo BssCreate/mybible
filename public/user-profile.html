@@ -267,7 +267,7 @@
   margin: 0 0 10px;
 }
 
-.news-card p {
+.news-card .desc {
   margin: 5px 0;
   white-space: pre-wrap; /* сохраняет переносы строк */
 }
@@ -443,7 +443,7 @@
             
                         newsCard.innerHTML = `
                             <h2>${newsItem.title}</h2>
-                            <p>${convertLinks(newsItem.desc)}</p>
+                            <p class="desc">${convertLinks(newsItem.desc)}</p>
                             <p class="news-meta">
                                 ${newsItem.date} ${tagsHTML}
                             </p>
