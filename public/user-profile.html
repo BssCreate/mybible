@@ -520,6 +520,33 @@
                     </div>`;
                 renderBooks();
             }
+
+            else if (section === 'about') {
+                content.innerHTML = `<div id="about-header" class="sticky-header">О приложении</div>
+                    <div id="notifications" class="notifications-box">
+                        <h3>"Моя Библиотека" | Версия: 2.6</h3>
+                        <div id="notifications-list">
+                            <p style="white-space: pre-wrap">"Моя Библиотека" - это мобильное приложение позволяет просматривать список книг полученых или для сдачи назад в библиотеку. Вопросы и предложения по работе мобильного приложения можно направить на форму https://forms.gle/mbnUohwcTS1iXy9j6 или написать на почту createprograms123@mail.ru указав тему письма: Работа приложения "Моя Библиотека". Спасибо, что пользуетесь нашими приложениями! </p>
+                        </div>
+                    </div>
+                    <button id="exit-btn" style="
+                        margin: 30px auto 20px;
+                        display: block;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        border: 1px solid red;
+                        background-color: white;
+                        color: red;
+                        border-radius: 8px;
+                        cursor: pointer;
+                    " onclick="changeContent('profile')">
+                        Назад
+                    </button>
+
+                    
+                    `;
+                renderBooks();
+            }
     
             else if (section === 'profile') {
                 content.innerHTML = `
@@ -545,6 +572,20 @@
                         cursor: pointer;
                     ">
                         Выйти
+                    </button>
+                    </div>
+                    <button id="about-btn" style="
+                        margin: 30px auto 20px;
+                        display: block;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        border: 1px solid red;
+                        background-color: white;
+                        color: red;
+                        border-radius: 8px;
+                        cursor: pointer;
+                    " onclick="changeContent('about')">
+                        О приложении
                     </button>
                 `;
                 renderStudentInfo();
