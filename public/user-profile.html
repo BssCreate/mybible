@@ -544,9 +544,9 @@
                         display: block;
                         padding: 10px 20px;
                         font-size: 16px;
-                        border: 1px solid red;
+                        border: 1px solid #007bff;
                         background-color: white;
-                        color: red;
+                        color: #007bff;
                         border-radius: 8px;
                         cursor: pointer;
                     " onclick="changeContent('profile')">
@@ -570,6 +570,21 @@
                             <p>В разработке.</p>
                         </div>
                     </div>
+                    </div>
+                    <button id="about-btn" style="
+                        margin: 30px auto 20px;
+                        display: block;
+                        padding: 10px 20px;
+                        font-size: 16px;
+                        border: 1px solid #007bff;
+                        background-color: white;
+                        color: #007bff;
+                        border-radius: 8px;
+                        cursor: pointer;
+                    " onclick="changeContent('about')">
+                        О приложении
+                    </button>
+
                     <button id="logout-btn" style="
                         margin: 30px auto 20px;
                         display: block;
@@ -582,20 +597,6 @@
                         cursor: pointer;
                     ">
                         Выйти
-                    </button>
-                    </div>
-                    <button id="about-btn" style="
-                        margin: 30px auto 20px;
-                        display: block;
-                        padding: 10px 20px;
-                        font-size: 16px;
-                        border: 1px solid red;
-                        background-color: white;
-                        color: red;
-                        border-radius: 8px;
-                        cursor: pointer;
-                    " onclick="changeContent('about')">
-                        О приложении
                     </button>
                 `;
                 renderStudentInfo();
