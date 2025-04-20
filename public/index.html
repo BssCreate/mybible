@@ -59,6 +59,7 @@
             }
     
     .error-message {
+      text-align: center;
       color: red;
       font-size: 12px;
       margin-top: 5px;
@@ -89,7 +90,6 @@
     <div class="input-group">
       <input type="password" id="password" placeholder=" " required maxlength="40" />
       <label for="password">Пароль</label>
-                <div id="login-password-error" class="error-message"></div>
       <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
     </div>
       <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
@@ -98,6 +98,7 @@
       </div>
     <button class="login-button" onclick="validateLogin()">Войти</button>
           <p class="password-hint">За паролем обратись к библиотекарю</p>
+          <div id="login-password-error" class="error-message"></div>
   </div>
 
   <!-- Элемент для затемнения экрана и отображения анимации -->
