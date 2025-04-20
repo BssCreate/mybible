@@ -68,7 +68,44 @@
       margin-bottom: 20px;
     }
 
-    .password-hint {
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 10px;
+  padding-top: 20px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.input-wrapper label {
+  position: absolute;
+  top: 12px;
+  left: 10px;
+  font-size: 16px;
+  color: #888;
+  pointer-events: none;
+  transition: 0.2s ease all;
+}
+
+/* Сдвигаем label вверх при фокусе или наличии текста */
+.input-wrapper input:focus + label,
+.input-wrapper input:not(:placeholder-shown) + label {
+  top: 2px;
+  font-size: 12px;
+  color: #555;
+}
+
+/* Скрываем placeholder, если ты его не используешь */
+input::placeholder {
+  opacity: 0;
+}
+
+/* Подсказка под полем */
+.password-hint {
   font-size: 12px;
   color: #888;
   text-align: center;
@@ -78,9 +115,8 @@
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Показываем при фокусе на input */
+/* Анимация появления подсказки при фокусе */
 .input-group:has(input:focus) .password-hint {
-  display: flex;
   opacity: 1;
   transform: translateY(0);
 }
@@ -96,12 +132,15 @@
       <div id="login-error" class="error-message"></div>
     </div>
     <div class="input-group">
-      <input type="password" id="password" placeholder=" " required maxlength="40" />
-      <label for="password">Пароль</label>
-      <p class="password-hint" style="display: none;">За паролем обратись к библиотекарю</p>
-      <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
-      <div id="login-password-error" class="error-message"></div>
-    </div>
+  <div class="input-wrapper">
+    <input type="password" id="password" required maxlength="40" />
+    <label for="password">Пароль</label>
+  </div>
+  <p class="password-hint">За паролем обратись к библиотекарю</p>
+  <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
+  <div id="login-password-error" class="error-message"></div>
+</div>
+
       <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
         <input type="checkbox" id="rememberMe" />
         <label for="rememberMe" style="font-size: 14px;">Запомнить меня</label>
