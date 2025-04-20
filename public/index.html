@@ -68,44 +68,7 @@
       margin-bottom: 20px;
     }
 
-.input-wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.input-wrapper input {
-  width: 100%;
-  padding: 12px 10px;
-  padding-top: 20px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-.input-wrapper label {
-  position: absolute;
-  top: 12px;
-  left: 10px;
-  font-size: 16px;
-  color: #888;
-  pointer-events: none;
-  transition: 0.2s ease all;
-}
-
-/* Сдвигаем label вверх при фокусе или наличии текста */
-.input-wrapper input:focus + label,
-.input-wrapper input:not(:placeholder-shown) + label {
-  top: 2px;
-  font-size: 12px;
-  color: #555;
-}
-
-/* Скрываем placeholder, если ты его не используешь */
-input::placeholder {
-  opacity: 0;
-}
-
-/* Подсказка под полем */
-.password-hint {
+    .password-hint {
   font-size: 12px;
   color: #888;
   text-align: center;
@@ -115,8 +78,9 @@ input::placeholder {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Анимация появления подсказки при фокусе */
+/* Показываем при фокусе на input */
 .input-group:has(input:focus) .password-hint {
+  display: flex;
   opacity: 1;
   transform: translateY(0);
 }
@@ -132,20 +96,18 @@ input::placeholder {
       <div id="login-error" class="error-message"></div>
     </div>
     <div class="input-group">
-  <div class="input-wrapper">
-    <input type="password" id="password" required maxlength="40" />
-    <label for="password">Пароль</label>
-  </div>
-  <p class="password-hint">За паролем обратись к библиотекарю</p>
-  <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
-  <div id="login-password-error" class="error-message"></div>
-</div>
-
+      <input type="password" id="password" placeholder=" " required maxlength="40" />
+      <label for="password">Пароль</label>
+      <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
+    </div>
       <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
         <input type="checkbox" id="rememberMe" />
         <label for="rememberMe" style="font-size: 14px;">Запомнить меня</label>
       </div>
+          <div id="login-password-error" class="error-message"></div>
+
     <button class="login-button" onclick="validateLogin()">Войти</button>
+          <p class="password-hint" style="display: none;">За паролем обратись к библиотекарю</p>
   </div>
 
   <!-- Элемент для затемнения экрана и отображения анимации -->
@@ -175,10 +137,10 @@ input::placeholder {
     if (numbers.length > 10) numbers = numbers.substring(0, 10); // Ограничиваем длину
 
     let formatted = "+7 ";
-    if (numbers.length > 0) formatted += `${numbers.substring(0, 3)}`;
-    if (numbers.length >= 4) formatted += ` ${numbers.substring(3, 6)}`;
-    if (numbers.length >= 7) formatted += `-${numbers.substring(6, 8)}`;
-    if (numbers.length >= 9) formatted += `-${numbers.substring(8, 10)}`;
+    if (numbers.length > 0) formatted += ${numbers.substring(0, 3)};
+    if (numbers.length >= 4) formatted +=  ${numbers.substring(3, 6)};
+    if (numbers.length >= 7) formatted += -${numbers.substring(6, 8)};
+    if (numbers.length >= 9) formatted += -${numbers.substring(8, 10)};
 
     return formatted;
   }
