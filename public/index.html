@@ -80,7 +80,6 @@
 
 /* Показываем при фокусе на input */
 .input-group:has(input:focus) .password-hint {
-  display: flex;
   opacity: 1;
   transform: translateY(0);
 }
@@ -105,9 +104,8 @@
         <label for="rememberMe" style="font-size: 14px;">Запомнить меня</label>
       </div>
           <div id="login-password-error" class="error-message"></div>
-
     <button class="login-button" onclick="validateLogin()">Войти</button>
-          <p class="password-hint" style="display: none;">За паролем обратись к библиотекарю</p>
+          <p class="password-hint">За паролем обратись к библиотекарю</p>
   </div>
 
   <!-- Элемент для затемнения экрана и отображения анимации -->
@@ -137,10 +135,11 @@
     if (numbers.length > 10) numbers = numbers.substring(0, 10); // Ограничиваем длину
 
     let formatted = "+7 ";
-    if (numbers.length > 0) formatted += ${numbers.substring(0, 3)};
-    if (numbers.length >= 4) formatted +=  ${numbers.substring(3, 6)};
-    if (numbers.length >= 7) formatted += -${numbers.substring(6, 8)};
-    if (numbers.length >= 9) formatted += -${numbers.substring(8, 10)};
+    if (numbers.length > 0) formatted += `${numbers.substring(0, 3)}`;
+    if (numbers.length >= 4) formatted += ` ${numbers.substring(3, 6)}`;
+    if (numbers.length >= 7) formatted += `-${numbers.substring(6, 8)}`;
+    if (numbers.length >= 9) formatted += `-${numbers.substring(8, 10)}`;
+
 
     return formatted;
   }
