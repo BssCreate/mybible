@@ -626,7 +626,7 @@
     
             const fullName = `${student["Фамилия"]} ${student["Имя"]} ${student["Отчество"]}`;
             const education = student["Образование"] || student["Роль"] || "Не указано";
-            const schoolName = student["Учебное заведение(Если учится)"] || org.school || "Не указано";
+            const schoolName = student["school"] || org.school || "Не указано";
     
             container.innerHTML = `
                 <p>${fullName}</p>
