@@ -14,7 +14,7 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             height: 100vh;
             background-color: #f4f7fb;
             font-family: 'Roboto', sans-serif;
