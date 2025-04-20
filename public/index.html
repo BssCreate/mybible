@@ -73,16 +73,8 @@
   color: #888;
   text-align: center;
   margin-top: 4px;
-  opacity: 0;
-  transform: translateY(-5px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Показываем при фокусе на input */
-.input-group:has(input:focus) .password-hint {
-  opacity: 1;
-  transform: translateY(0);
-}
 
   </style>
 </head>
@@ -96,7 +88,6 @@
     </div>
     <div class="input-group">
       <input type="password" id="password" placeholder=" " required maxlength="40" />
-      <p class="password-hint">За паролем обратись к библиотекарю</p>
       <label for="password">Пароль</label>
       <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
     </div>
@@ -106,6 +97,7 @@
       </div>
           <div id="login-password-error" class="error-message"></div>
     <button class="login-button" onclick="validateLogin()">Войти</button>
+          <p class="password-hint">За паролем обратись к библиотекарю</p>
   </div>
 
   <!-- Элемент для затемнения экрана и отображения анимации -->
