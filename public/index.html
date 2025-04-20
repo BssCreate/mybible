@@ -89,13 +89,13 @@
     <div class="input-group">
       <input type="password" id="password" placeholder=" " required maxlength="40" />
       <label for="password">Пароль</label>
+                <div id="login-password-error" class="error-message"></div>
       <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
     </div>
       <div class="input-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
         <input type="checkbox" id="rememberMe" />
         <label for="rememberMe" style="font-size: 14px;">Запомнить меня</label>
       </div>
-          <div id="login-password-error" class="error-message"></div>
     <button class="login-button" onclick="validateLogin()">Войти</button>
           <p class="password-hint">За паролем обратись к библиотекарю</p>
   </div>
