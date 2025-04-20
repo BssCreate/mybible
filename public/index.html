@@ -80,6 +80,7 @@
 
 /* Показываем при фокусе на input */
 .input-group:has(input:focus) .password-hint {
+  display: flex;
   opacity: 1;
   transform: translateY(0);
 }
@@ -97,7 +98,7 @@
     <div class="input-group">
       <input type="password" id="password" placeholder=" " required maxlength="40" />
       <label for="password">Пароль</label>
-      <p class="password-hint">За паролем обратись к библиотекарю.</p>
+      <p class="password-hint" style="display: none;">За паролем обратись к библиотекарю</p>
       <img id="toggle-password" src="password-hidden.svg" style="display: none;" />
       <div id="login-password-error" class="error-message"></div>
     </div>
