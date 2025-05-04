@@ -637,7 +637,7 @@
     
         function renderBooks() {
             const container = document.getElementById("book-container");
-            container.innerHTML = ""; // очищаем контейнер перед рендером
+            container.innerHTML = ""; // очищаем перед рендером
         
             if (!globalUserData) {
                 container.innerHTML += "<p>Ученик не найден.</p>";
@@ -649,16 +649,8 @@
             const currentBooks = allBooks.filter(book => book.status === false);
             const readBooks = allBooks.filter(book => book.status === true);
         
-            // Книги на руках
-            const currentSection = document.createElement("div");
-            currentSection.className = "book-section";
-        
-            const currentTitle = document.createElement("h3");
-            currentTitle.textContent = "📚 Книги на руках";
-            currentSection.appendChild(currentTitle);
-        
             if (currentBooks.length === 0) {
-                currentSection.innerHTML += "<p>Книги отсутствуют.</p>";
+                container.innerHTML += "<p>Книги отсутствуют.</p>";
             } else {
                 currentBooks.forEach(book => {
                     const item = document.createElement("div");
@@ -667,34 +659,37 @@
                         <div class="book-date">${book["Дата выдачи"] || "-"}</div>
                         <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
                     `;
-                    currentSection.appendChild(item);
+                    container.appendChild(item);
                 });
             }
         
-            container.appendChild(currentSection);
-        
-            // Прочитанные книги
             if (readBooks.length > 0) {
-                const readSection = document.createElement("div");
-                readSection.className = "book-section";
+                // Добавим разделитель
+                const hr = document.createElement("hr");
+                container.appendChild(hr);
         
-                const readTitle = document.createElement("h3");
-                readTitle.textContent = "✅ Прочитанные книги";
-                readSection.appendChild(readTitle);
+                // Заголовок строк
+                const header = document.createElement("div");
+                header.className = "book-header";
+                header.innerHTML = `
+                    <div class="book-date">Дата выдачи</div>
+                    <div class="book-title">Автор и заглавие книги</div>
+                `;
+                container.appendChild(header);
         
+                // Прочитанные книги
                 readBooks.forEach(book => {
                     const item = document.createElement("div");
-                    item.className = "book-item read";
+                    item.className = "book-item read"; // можно стилизовать по-другому
                     item.innerHTML = `
                         <div class="book-date">${book["Дата выдачи"] || "-"}</div>
                         <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
                     `;
-                    readSection.appendChild(item);
+                    container.appendChild(item);
                 });
-        
-                container.appendChild(readSection);
             }
         }
+
 
     
         function formatDate(date) {
