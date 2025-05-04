@@ -387,8 +387,7 @@
 
         .fixed-refresh-button {
             position: fixed;
-            bottom: 20px; /* отступ от низа */
-            right: 20px;  /* отступ от правого края */
+            bottom: 60px; /* отступ от низа */
             z-index: 9999; /* поверх всех элементов */
             padding: 10px 16px;
             background-color: #007bff;
@@ -401,8 +400,9 @@
         }
         
         .fixed-refresh-button:disabled {
-            background-color: #999;
-            cursor: default;
+            opacity: 0.6; /* делает чуть тусклее */
+            border-color: red; /* красная обводка */
+            cursor: not-allowed;
         }
 
 
