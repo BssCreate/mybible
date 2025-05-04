@@ -356,6 +356,43 @@
 /*             background-color: #e5ffe5; */
         }
 
+        #book-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-bottom: 80px; /* чтобы не перекрывалась кнопкой */
+        }
+        
+        #refresh-books {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            margin: 30px auto 20px;
+            display: block;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: 1px solid #007bff;
+            background-color: white;
+            color: #007bff;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        
+        #button-shadow {
+            position: fixed;
+            bottom: 75px;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(to top, rgba(255,255,255,0.8), transparent);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 999;
+        }
+
+
 
         * {
             outline: none;
@@ -522,15 +559,30 @@
 
     
             else if (section === 'books') {
-                content.innerHTML = `<div id="books-header" class="sticky-header">Книги</div>
-                    <div class="book-list" id="book-container">
-                        <div class="book-header">
-                            <div class="book-date">Дата выдачи</div>
-                            <div class="book-title">Автор и заглавие книги</div>
-                        </div>
-                    </div>`;
+                content.innerHTML = `
+                    <div id="books-header" class="sticky-header">Книги</div>
+                    <div class="book-list" id="book-container"></div>
+            
+                    <div id="button-shadow"></div>
+                    <button id="refresh-books">Обновить список</button>
+                `;
+            
                 renderBooks();
+            
+                // При нажатии кнопки — перерисовываем список
+                const refreshBtn = document.getElementById("refresh-books");
+                refreshBtn.addEventListener("click", renderBooks);
+            
+                // Добавляем тень под кнопкой при необходимости
+                const container = document.getElementById("book-container");
+                const shadow = document.getElementById("button-shadow");
+            
+                container.addEventListener("scroll", () => {
+                    const nearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 50;
+                    shadow.style.opacity = nearBottom ? "1" : "0";
+                });
             }
+
 
             else if (section === 'about') {
                 content.innerHTML = `<div id="about-header" class="sticky-header">О приложении</div>
