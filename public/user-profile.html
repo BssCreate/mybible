@@ -713,10 +713,6 @@
                 readBooks.forEach(book => {
                     const item = document.createElement("div");
                     item.className = "book-item read";
-                    item.innerHTML = `
-                        <div class="book-date">${book["Дата выдачи"] || "-"}</div>
-                        <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
-                    `;
                     container.appendChild(item);
                 });
             }
