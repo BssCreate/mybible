@@ -572,25 +572,26 @@
             }
     
             else if (section === 'books') {
-                content.innerHTML = `
-                    <div id="books-header" class="sticky-header">Книги</div>
-                    <div class="book-list" id="book-container"></div>
-                    <button id="refresh-books" class="fixed-refresh-button">Обновить список</button>
-                `;
-            
+            content.innerHTML = `
+                <div id="books-header" class="sticky-header">Книги</div>
+                <div class="book-list" id="book-container"></div>
+        
+                <button id="refresh-books" class="fixed-refresh-button">Обновить список</button>
+            `;
+        
+            renderBooks();
+        
+            const refreshBtn = document.getElementById("refresh-books");
+        
+            refreshBtn.addEventListener("click", () => {
+                refreshBtn.disabled = true;
                 renderBooks();
-            
-                // При нажатии кнопки — перерисовываем список
-                const refreshBtn = document.getElementById("refresh-books");
-                refreshBtn.addEventListener("click", () => {
-                    refreshBtn.disabled = true;
-                    renderBooks();
-                    loadUserData();
-            
-                    setTimeout(() => {
-                        refreshBtn.disabled = false;
-                    }, 7000);
-                });
+                loadUserData();
+        
+                setTimeout(() => {
+                    refreshBtn.disabled = false;
+                }, 7000);
+            });
             
                 // Добавляем тень под кнопкой при необходимости
                 const container = document.getElementById("book-container");
@@ -682,22 +683,6 @@
                     window.location.href = "index.html"; // назад на страницу входа
                 });
             }
-// При нажатии кнопки — перерисовываем список
-                const refreshBtn = document.getElementById("refresh-books");
-                
-                refreshBtn.addEventListener("click", () => {
-                    // Делаем кнопку неактивной
-                    refreshBtn.disabled = true;
-                
-                    // Вызываем функции
-                    renderBooks();
-                    loadUserData();
-                
-                    // Через 7 секунд снова активируем кнопку
-                    setTimeout(() => {
-                        refreshBtn.disabled = false;
-                    }, 7000);
-                });
 
         function convertLinks(text) {
             const urlRegex = /(https?:\/\/[^\s]+)/g;
