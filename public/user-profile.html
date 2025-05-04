@@ -385,6 +385,27 @@
             z-index: 999;
         }
 
+        .fixed-refresh-button {
+            position: fixed;
+            bottom: 20px; /* отступ от низа */
+            right: 20px;  /* отступ от правого края */
+            z-index: 9999; /* поверх всех элементов */
+            padding: 10px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .fixed-refresh-button:disabled {
+            background-color: #999;
+            cursor: default;
+        }
+
+
 
 
         * {
@@ -552,20 +573,34 @@
 
     
             else if (section === 'books') {
-                content.innerHTML = `
-                    <div id="books-header" class="sticky-header">Книги</div>
-                    <div class="book-list" id="book-container"></div>
-            
-                    <div id="button-shadow"></div>
-                    <button id="refresh-books">Обновить список</button>
-                `;
+            content.innerHTML = `
+                <div id="books-header" class="sticky-header">Книги</div>
+                <div class="book-list" id="book-container"></div>
+        
+                <button id="refresh-books" class="fixed-refresh-button">Обновить список</button>
+            `;
+        }
+
             
                 renderBooks();
             
                 // При нажатии кнопки — перерисовываем список
                 const refreshBtn = document.getElementById("refresh-books");
-                refreshBtn.addEventListener("click", renderBooks);
-                refreshBtn.addEventListener("click", loadUserData);
+                
+                refreshBtn.addEventListener("click", () => {
+                    // Делаем кнопку неактивной
+                    refreshBtn.disabled = true;
+                
+                    // Вызываем функции
+                    renderBooks();
+                    loadUserData();
+                
+                    // Через 7 секунд снова активируем кнопку
+                    setTimeout(() => {
+                        refreshBtn.disabled = false;
+                    }, 7000);
+                });
+
             
                 // Добавляем тень под кнопкой при необходимости
                 const container = document.getElementById("book-container");
