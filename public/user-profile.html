@@ -573,11 +573,22 @@
                 content.innerHTML = `
                     <div id="books-header" class="sticky-header">Книги</div>
                     <div class="book-list" id="book-container"></div>
-            
                     <button id="refresh-books" class="fixed-refresh-button">Обновить список</button>
                 `;
-            }
-            renderBooks();
+            
+                renderBooks();
+            
+                // При нажатии кнопки — перерисовываем список
+                const refreshBtn = document.getElementById("refresh-books");
+                refreshBtn.addEventListener("click", () => {
+                    refreshBtn.disabled = true;
+                    renderBooks();
+                    loadUserData();
+            
+                    setTimeout(() => {
+                        refreshBtn.disabled = false;
+                    }, 7000);
+                });
             
                 // Добавляем тень под кнопкой при необходимости
                 const container = document.getElementById("book-container");
@@ -588,8 +599,7 @@
                     shadow.style.opacity = nearBottom ? "1" : "0";
                 });
             }
-
-
+            
             else if (section === 'about') {
                 content.innerHTML = `<div id="about-header" class="sticky-header">О приложении</div>
                     <div id="notifications" class="notifications-box">
