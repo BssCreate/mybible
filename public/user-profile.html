@@ -640,7 +640,7 @@
             container.innerHTML = ""; // очищаем перед рендером
         
             if (!globalUserData) {
-                container.innerHTML += "<p>Ученик не найден.</p>";
+                container.innerHTML += `<p style="text-align:center;">Ученик не найден.</p>`;
                 return;
             }
         
@@ -649,7 +649,15 @@
             const currentBooks = allBooks.filter(book => book.status === false);
             const readBooks = allBooks.filter(book => book.status === true);
         
-            // === Книги на руках ===
+            // === Заголовок: Книги на руках ===
+            const currentLabel = document.createElement("div");
+            currentLabel.style.textAlign = "center";
+            currentLabel.style.fontWeight = "bold";
+            currentLabel.style.margin = "10px 0";
+            currentLabel.textContent = "Книги на руках";
+            container.appendChild(currentLabel);
+        
+            // === Заголовок строк ===
             const currentHeader = document.createElement("div");
             currentHeader.className = "book-header";
             currentHeader.innerHTML = `
@@ -659,7 +667,10 @@
             container.appendChild(currentHeader);
         
             if (currentBooks.length === 0) {
-                container.innerHTML += "<p>Книги отсутствуют.</p>";
+                const emptyMsg = document.createElement("p");
+                emptyMsg.textContent = "Книги отсутствуют.";
+                emptyMsg.style.textAlign = "center";
+                container.appendChild(emptyMsg);
             } else {
                 currentBooks.forEach(book => {
                     const item = document.createElement("div");
@@ -672,18 +683,19 @@
                 });
             }
         
-            // === Разделитель и заголовок ===
+            // === Разделитель ===
             const hr = document.createElement("hr");
             container.appendChild(hr);
         
-            const label = document.createElement("div");
-            label.style.textAlign = "center";
-            label.style.fontWeight = "bold";
-            label.style.margin = "10px 0";
-            label.textContent = "Прочитанные книги";
-            container.appendChild(label);
+            // === Заголовок: Прочитанные книги ===
+            const readLabel = document.createElement("div");
+            readLabel.style.textAlign = "center";
+            readLabel.style.fontWeight = "bold";
+            readLabel.style.margin = "10px 0";
+            readLabel.textContent = "Прочитанные книги";
+            container.appendChild(readLabel);
         
-            // === Заголовок прочитанных ===
+            // === Заголовок строк ===
             const readHeader = document.createElement("div");
             readHeader.className = "book-header";
             readHeader.innerHTML = `
@@ -693,9 +705,10 @@
             container.appendChild(readHeader);
         
             if (readBooks.length === 0) {
-                const none = document.createElement("p");
-                none.textContent = "Нет прочитанных книг.";
-                container.appendChild(none);
+                const noRead = document.createElement("p");
+                noRead.textContent = "Нет прочитанных книг.";
+                noRead.style.textAlign = "center";
+                container.appendChild(noRead);
             } else {
                 readBooks.forEach(book => {
                     const item = document.createElement("div");
@@ -708,6 +721,7 @@
                 });
             }
         }
+
 
 
 
