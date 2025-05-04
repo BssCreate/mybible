@@ -649,6 +649,15 @@
             const currentBooks = allBooks.filter(book => book.status === false);
             const readBooks = allBooks.filter(book => book.status === true);
         
+            // === Книги на руках ===
+            const currentHeader = document.createElement("div");
+            currentHeader.className = "book-header";
+            currentHeader.innerHTML = `
+                <div class="book-date">Дата выдачи</div>
+                <div class="book-title">Автор и заглавие книги</div>
+            `;
+            container.appendChild(currentHeader);
+        
             if (currentBooks.length === 0) {
                 container.innerHTML += "<p>Книги отсутствуют.</p>";
             } else {
@@ -663,24 +672,34 @@
                 });
             }
         
-            if (readBooks.length > 0) {
-                // Добавим разделитель
-                const hr = document.createElement("hr");
-                container.appendChild(hr);
+            // === Разделитель и заголовок ===
+            const hr = document.createElement("hr");
+            container.appendChild(hr);
         
-                // Заголовок строк
-                const header = document.createElement("div");
-                header.className = "book-header";
-                header.innerHTML = `
-                    <div class="book-date">Дата выдачи</div>
-                    <div class="book-title">Автор и заглавие книги</div>
-                `;
-                container.appendChild(header);
+            const label = document.createElement("div");
+            label.style.textAlign = "center";
+            label.style.fontWeight = "bold";
+            label.style.margin = "10px 0";
+            label.textContent = "Прочитанные книги";
+            container.appendChild(label);
         
-                // Прочитанные книги
+            // === Заголовок прочитанных ===
+            const readHeader = document.createElement("div");
+            readHeader.className = "book-header";
+            readHeader.innerHTML = `
+                <div class="book-date">Дата выдачи</div>
+                <div class="book-title">Автор и заглавие книги</div>
+            `;
+            container.appendChild(readHeader);
+        
+            if (readBooks.length === 0) {
+                const none = document.createElement("p");
+                none.textContent = "Нет прочитанных книг.";
+                container.appendChild(none);
+            } else {
                 readBooks.forEach(book => {
                     const item = document.createElement("div");
-                    item.className = "book-item read"; // можно стилизовать по-другому
+                    item.className = "book-item read";
                     item.innerHTML = `
                         <div class="book-date">${book["Дата выдачи"] || "-"}</div>
                         <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
@@ -689,6 +708,7 @@
                 });
             }
         }
+
 
 
     
