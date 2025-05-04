@@ -568,18 +568,15 @@
                     }
                 });
             }
-
-
-
     
             else if (section === 'books') {
-            content.innerHTML = `
-                <div id="books-header" class="sticky-header">Книги</div>
-                <div class="book-list" id="book-container"></div>
-        
-                <button id="refresh-books" class="fixed-refresh-button">Обновить список</button>
-            `;
-        }
+                content.innerHTML = `
+                    <div id="books-header" class="sticky-header">Книги</div>
+                    <div class="book-list" id="book-container"></div>
+            
+                    <button id="refresh-books" class="fixed-refresh-button">Обновить список</button>
+                `;
+            }
 
             
                 renderBooks();
