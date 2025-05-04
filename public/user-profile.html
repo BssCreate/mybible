@@ -637,27 +637,65 @@
     
         function renderBooks() {
             const container = document.getElementById("book-container");
+            container.innerHTML = ""; // очищаем контейнер перед рендером
+        
             if (!globalUserData) {
                 container.innerHTML += "<p>Ученик не найден.</p>";
                 return;
             }
-    
-            const books = globalUserData.student.books || [];
-            if (books.length === 0) {
-                container.innerHTML += "<p>Книги отсутствуют.</p>";
-                return;
+        
+            const allBooks = globalUserData.student.books || [];
+        
+            const currentBooks = allBooks.filter(book => book.status === false);
+            const readBooks = allBooks.filter(book => book.status === true);
+        
+            // Книги на руках
+            const currentSection = document.createElement("div");
+            currentSection.className = "book-section";
+        
+            const currentTitle = document.createElement("h3");
+            currentTitle.textContent = "📚 Книги на руках";
+            currentSection.appendChild(currentTitle);
+        
+            if (currentBooks.length === 0) {
+                currentSection.innerHTML += "<p>Книги отсутствуют.</p>";
+            } else {
+                currentBooks.forEach(book => {
+                    const item = document.createElement("div");
+                    item.className = "book-item";
+                    item.innerHTML = `
+                        <div class="book-date">${book["Дата выдачи"] || "-"}</div>
+                        <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
+                    `;
+                    currentSection.appendChild(item);
+                });
             }
-    
-            books.forEach(book => {
-                const item = document.createElement("div");
-                item.className = "book-item";
-                item.innerHTML = `
-                    <div class="book-date">${book["Дата выдачи"] || "-"}</div>
-                    <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
-                `;
-                container.appendChild(item);
-            });
+        
+            container.appendChild(currentSection);
+        
+            // Прочитанные книги
+            if (readBooks.length > 0) {
+                const readSection = document.createElement("div");
+                readSection.className = "book-section";
+        
+                const readTitle = document.createElement("h3");
+                readTitle.textContent = "✅ Прочитанные книги";
+                readSection.appendChild(readTitle);
+        
+                readBooks.forEach(book => {
+                    const item = document.createElement("div");
+                    item.className = "book-item read";
+                    item.innerHTML = `
+                        <div class="book-date">${book["Дата выдачи"] || "-"}</div>
+                        <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
+                    `;
+                    readSection.appendChild(item);
+                });
+        
+                container.appendChild(readSection);
+            }
         }
+
     
         function formatDate(date) {
             const dateObj = new Date(date);
