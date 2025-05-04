@@ -695,15 +695,6 @@
             readLabel.textContent = "Прочитанные книги";
             container.appendChild(readLabel);
         
-            // === Заголовок строк ===
-            const readHeader = document.createElement("div");
-            readHeader.className = "book-header";
-            readHeader.innerHTML = `
-                <div class="book-date">Дата выдачи</div>
-                <div class="book-title">Автор и заглавие книги</div>
-            `;
-            container.appendChild(readHeader);
-        
             if (readBooks.length === 0) {
                 const noRead = document.createElement("p");
                 noRead.textContent = "Нет прочитанных книг.";
@@ -713,6 +704,10 @@
                 readBooks.forEach(book => {
                     const item = document.createElement("div");
                     item.className = "book-item read";
+                    item.innerHTML = `
+                        <div class="book-date">${book["Дата выдачи"] || "-"}</div>
+                        <div class="book-title">${book["Автор и заглавие книги"] || "-"}</div>
+                    `;
                     container.appendChild(item);
                 });
             }
