@@ -351,6 +351,11 @@
     border-bottom: 1px solid #ccc;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Лёгкая тень */
 }
+        .book-item.read {
+            opacity: 0.6;
+/*             background-color: #e5ffe5; */
+        }
+
 
         * {
             outline: none;
@@ -648,14 +653,7 @@
         
             const currentBooks = allBooks.filter(book => book.status === false);
             const readBooks = allBooks.filter(book => book.status === true);
-        
-            // === Заголовок: Книги на руках ===
-            const currentLabel = document.createElement("div");
-            currentLabel.style.textAlign = "center";
-            currentLabel.style.fontWeight = "bold";
-            currentLabel.style.margin = "10px 0";
-            currentLabel.textContent = "Книги на руках";
-            container.appendChild(currentLabel);
+    
         
             // === Заголовок строк ===
             const currentHeader = document.createElement("div");
@@ -686,14 +684,6 @@
             // === Разделитель ===
             const hr = document.createElement("hr");
             container.appendChild(hr);
-        
-            // === Заголовок: Прочитанные книги ===
-            const readLabel = document.createElement("div");
-            readLabel.style.textAlign = "center";
-            readLabel.style.fontWeight = "bold";
-            readLabel.style.margin = "10px 0";
-            readLabel.textContent = "Прочитанные книги";
-            container.appendChild(readLabel);
         
             if (readBooks.length === 0) {
                 const noRead = document.createElement("p");
