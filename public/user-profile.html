@@ -565,6 +565,7 @@
                 // При нажатии кнопки — перерисовываем список
                 const refreshBtn = document.getElementById("refresh-books");
                 refreshBtn.addEventListener("click", renderBooks);
+                refreshBtn.addEventListener("click", loadUserData);
             
                 // Добавляем тень под кнопкой при необходимости
                 const container = document.getElementById("book-container");
