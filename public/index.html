@@ -157,70 +157,83 @@
     }
   });
     async function validateLogin() {
-    const login = document.getElementById("login").value.trim().replace(/[^\d]/g, '');  // Убираем всё, кроме цифр
-    const password = document.getElementById("password").value.trim();
-
-    document.getElementById("overlay").style.display = 'flex';
-    document.getElementById("login-password-error").innerText = '';
+      const loginRaw = document.getElementById("login").value.trim();
+      const login = loginRaw.replace(/[^\d]/g, '');  // Убираем всё, кроме цифр
+      const password = document.getElementById("password").value.trim();
     
-    try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzVvCpIY-MgrwXyk51XStxFIL1PW7r7VPEgxcLf4-eK2kWDjOZES1pLrbk9i2O5r39B/exec'); // вставь свою ссылку
-      const json = await response.json();
-
-      let success = false;
-
-      // Проверка среди администраторов
-      const admins = json.admins || [];
-      for (const admin of admins) {
-        const normalizedAdminLogin = admin.login.replace(/[^\d]/g, ''); // Нормализуем логин администратора
-        if (normalizedAdminLogin === login && admin.password.toString() === password) {
-          success = true;
-          localStorage.setItem("login", login); // сохраняем номер телефона в localStorage
-          window.location.href = "user-profile.html"; // переход на страницу профиля
-          break;
+      document.getElementById("overlay").style.display = 'flex';
+      document.getElementById("login-password-error").innerText = '';
+    
+      try {
+        // Получаем всю базу из Firebase
+        const response = await fetch('https://my-library-d430a-default-rtdb.europe-west1.firebasedatabase.app/.json');
+        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+        const json = await response.json();
+    
+        let success = false;
+    
+        // Проверяем администраторов - предполагаем, что json.admins - объект с ключами
+        if (json.admins) {
+          for (const key in json.admins) {
+            const admin = json.admins[key];
+            const normalizedAdminLogin = (admin.login || '').replace(/[^\d]/g, '');
+            if (normalizedAdminLogin === login && admin.password === password) {
+              success = true;
+              localStorage.setItem("login", login);
+              window.location.href = "user-profile.html";
+              break;
+            }
+          }
         }
-      }
-
-      // Если не найдено среди администраторов, проверяем среди обучающихся
-      if (!success) {
-        const organizations = json.list1 || [];
-        for (const org of organizations) {
-          const students_json = JSON.parse(org.students_json || '{}');
-          for (const className in students_json) {
-            const students = students_json[className];
-            for (const student of students) {
-              const studentPhone = (student["Номер телефона"] || '').replace(/[^\d]/g, ''); // Нормализуем телефон ученика
-              const studentPass = student["Пароль"]?.toString() || '';
-              if (studentPhone === login && studentPass === password) {
-                success = true;
-                if (document.getElementById("rememberMe").checked) {
-                  localStorage.setItem("savedLogin", login);
-                  localStorage.setItem("savedPassword", password);
-                } else {
-                  localStorage.removeItem("savedLogin");
-                  localStorage.removeItem("savedPassword");
+    
+        // Если не админ, ищем в учениках
+        if (!success && json.schools) {
+          for (const schoolKey in json.schools) {
+            const school = json.schools[schoolKey];
+            if (!school.students_json) continue;
+    
+            const students_json = school.students_json;
+    
+            for (const className in students_json) {
+              const students = students_json[className];
+              if (!Array.isArray(students)) continue;
+    
+              for (const student of students) {
+                const studentPhone = (student["Номер телефона"] || '').replace(/[^\d]/g, '');
+                const studentPass = (student["Пароль"] || '').toString();
+    
+                if (studentPhone === login && studentPass === password) {
+                  success = true;
+    
+                  if (document.getElementById("rememberMe").checked) {
+                    localStorage.setItem("savedLogin", login);
+                    localStorage.setItem("savedPassword", password);
+                  } else {
+                    localStorage.removeItem("savedLogin");
+                    localStorage.removeItem("savedPassword");
+                  }
+    
+                  window.location.href = "user-profile.html";
+                  break;
                 }
-                window.location.href = "user-profile.html"; // переход на страницу профиля
-                break;
               }
+              if (success) break;
             }
             if (success) break;
           }
-          if (success) break;
         }
+    
+        if (!success) {
+          document.getElementById("login-password-error").innerText = "Неверный логин или пароль";
+        }
+      } catch (e) {
+        console.error("Ошибка при получении данных:", e);
+        document.getElementById("login-password-error").innerText = "Ошибка подключения к серверу";
+      } finally {
+        document.getElementById("overlay").style.display = 'none';
       }
-
-      if (!success) {
-        document.getElementById("login-password-error").innerText = "Неверный логин или пароль";
-      }
-
-    } catch (e) {
-      console.error("Ошибка при получении данных:", e);
-      document.getElementById("login-password-error").innerText = "Ошибка подключения к серверу";
-    } finally {
-      document.getElementById("overlay").style.display = 'none';
     }
-  }
+
 
     // Переключение видимости пароля
   togglePassword.addEventListener('click', function () {
